@@ -1,0 +1,3 @@
+-keep class androidx.lifecycle.DefaultLifecycleObserver
+-keep class com.hyphenate.** {*;}
+-dontwarn  com.hyphenate.**
