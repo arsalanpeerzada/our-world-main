@@ -1,6 +1,7 @@
 
 
-import 'package:streaming_post_demo/card_game_module/models/player_model.dart';
+
+import 'package:ourworldmain/card_game_module/models/player_model.dart';
 
 class Turn {
   final List<PlayerModel> players;

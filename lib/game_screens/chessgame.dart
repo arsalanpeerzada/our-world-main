@@ -5,7 +5,6 @@ import 'package:chess/chess.dart' as chesslib;
 import 'package:simple_chess_board/models/piece_type.dart';
 import 'package:simple_chess_board/models/short_move.dart';
 import 'package:simple_chess_board/widgets/chessboard.dart';
-import 'package:streaming_post_demo/game_screens/game_lost.dart';
 
 class ChessGameRoom extends StatefulWidget {
   const ChessGameRoom({

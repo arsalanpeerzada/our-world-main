@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:streaming_post_demo/payment_screens/ui/payment_success.dart';
+import 'package:ourworldmain/payment_screens/ui/payment_success.dart';
 
 import '../../live_screen/model/streaming_request_model.dart';
 

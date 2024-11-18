@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:streaming_post_demo/common/size_config.dart';
-import 'package:streaming_post_demo/constants/string_constants.dart';
-
+import 'package:ourworldmain/common/size_config.dart';
+import 'package:ourworldmain/constants/string_constants.dart';
 class TermsScreen extends StatelessWidget {
   const TermsScreen({Key? key}) : super(key: key);
 

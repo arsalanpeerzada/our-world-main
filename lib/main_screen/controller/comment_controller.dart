@@ -9,12 +9,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:streaming_post_demo/common/widgets.dart';
-import 'package:streaming_post_demo/constants/storage_constants.dart';
-import 'package:streaming_post_demo/constants/string_constants.dart';
-import 'package:streaming_post_demo/notifications.dart';
-import 'package:streaming_post_demo/post/model/post_model.dart';
 import 'package:http/http.dart' as http;
+import 'package:ourworldmain/common/widgets.dart';
+import 'package:ourworldmain/constants/storage_constants.dart';
+import 'package:ourworldmain/constants/string_constants.dart';
+import 'package:ourworldmain/notifications.dart';
+import 'package:ourworldmain/post/model/post_model.dart';
 
 import '../../common/size_config.dart';
 import '../../constants/app_colors.dart';

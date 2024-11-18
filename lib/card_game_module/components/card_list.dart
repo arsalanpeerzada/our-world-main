@@ -1,6 +1,6 @@
 
 import 'package:flutter/material.dart';
-import 'package:streaming_post_demo/card_game_module/components/playing_card.dart';
+import 'package:ourworldmain/card_game_module/components/playing_card.dart';
 
 import '../constants.dart';
 import '../models/card_model.dart';

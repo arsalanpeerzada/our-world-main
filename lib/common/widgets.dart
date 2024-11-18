@@ -1,8 +1,8 @@
 import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:streaming_post_demo/common/size_config.dart';
-import 'package:streaming_post_demo/constants/string_constants.dart';
+import 'package:ourworldmain/common/size_config.dart';
+
 
 import '../constants/app_colors.dart';
 

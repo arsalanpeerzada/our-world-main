@@ -56,35 +56,35 @@ class CrazyEightsGameProvider extends GameProvider {
 
   @override
   Future<void> applyCardSideEffects(CardModel card) async {
-    if (card.value == "8") {
-      Suit suit;
-
-      if (turn.currentPlayer.isHuman) {
-        suit = await showDialog(
-          context: navigatorKey.currentContext!,
-          builder: (_) => const SuitChooserModal(),
-          barrierDismissible: false,
-        );
-      } else {
-        suit = turn.currentPlayer.cards.first.suit;
-      }
-
-      gameState[GS_LAST_SUIT] = suit;
-      setTrump(suit);
-      showToast(
-          "${turn.currentPlayer.name} has changed it to ${CardModel.suitToString(suit)}");
-    } else if (card.value == "2") {
-      await drawCards(turn.otherPlayer, count: 2, allowAnyTime: true);
-      showToast("${turn.otherPlayer.name} has to draw 2 cards!");
-    } else if (card.value == "QUEEN" && card.suit == Suit.Spades) {
-      await drawCards(turn.otherPlayer, count: 5, allowAnyTime: true);
-      showToast("${turn.otherPlayer.name} has to draw 5 cards!");
-    } else if (card.value == "JACK") {
-      showToast("${turn.otherPlayer.name} misses a turn!");
-      skipTurn();
-    }
-
-    notifyListeners();
+    // if (card.value == "8") {
+    //   Suit suit;
+    //
+    //   if (turn.currentPlayer.isHuman) {
+    //     suit = await showDialog(
+    //       context: navigatorKey.currentContext!,
+    //       builder: (_) => const SuitChooserModal(),
+    //       barrierDismissible: false,
+    //     );
+    //   } else {
+    //     suit = turn.currentPlayer.cards.first.suit;
+    //   }
+    //
+    //   gameState[GS_LAST_SUIT] = suit;
+    //   setTrump(suit);
+    //   showToast(
+    //       "${turn.currentPlayer.name} has changed it to ${CardModel.suitToString(suit)}");
+    // } else if (card.value == "2") {
+    //   await drawCards(turn.otherPlayer, count: 2, allowAnyTime: true);
+    //   showToast("${turn.otherPlayer.name} has to draw 2 cards!");
+    // } else if (card.value == "QUEEN" && card.suit == Suit.Spades) {
+    //   await drawCards(turn.otherPlayer, count: 5, allowAnyTime: true);
+    //   showToast("${turn.otherPlayer.name} has to draw 5 cards!");
+    // } else if (card.value == "JACK") {
+    //   showToast("${turn.otherPlayer.name} misses a turn!");
+    //   skipTurn();
+    // }
+    //
+    // notifyListeners();
   }
 
   @override

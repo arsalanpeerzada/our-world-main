@@ -13,12 +13,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:ourworldmain/common/widgets.dart';
+import 'package:ourworldmain/live_screen/model/live_audience_model.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:streaming_post_demo/common/widgets.dart';
-import 'package:streaming_post_demo/constants/api_endpoints.dart';
-import 'package:streaming_post_demo/live_screen/model/live_audience_model.dart';
-import 'package:streaming_post_demo/live_screen/model/streaming_request_model.dart';
-import 'package:streaming_post_demo/live_screen/ui/live_partner_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../common/size_config.dart';
@@ -29,6 +26,7 @@ import '../../login/login_screen.dart';
 import '../../method_channels/agora_chat.dart';
 import '../../profile/model/profile_model.dart';
 import '../model/chat_model.dart';
+import '../model/streaming_request_model.dart';
 import '../ui/live_screen.dart';
 
 class LivePartenerController extends GetxController {

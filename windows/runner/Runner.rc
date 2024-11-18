@@ -89,13 +89,13 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "com.example" "\0"
-            VALUE "FileDescription", "streaming_post_demo" "\0"
+            VALUE "CompanyName", "com.alkalab.ourworld" "\0"
+            VALUE "FileDescription", "ourworldmain" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "streaming_post_demo" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2023 com.example. All rights reserved." "\0"
-            VALUE "OriginalFilename", "streaming_post_demo.exe" "\0"
-            VALUE "ProductName", "streaming_post_demo" "\0"
+            VALUE "InternalName", "ourworldmain" "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2024 com.alkalab.ourworld. All rights reserved." "\0"
+            VALUE "OriginalFilename", "ourworldmain.exe" "\0"
+            VALUE "ProductName", "ourworldmain" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

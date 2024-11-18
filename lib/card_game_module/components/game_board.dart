@@ -1,7 +1,7 @@
 
 import 'package:flutter/material.dart';
+import 'package:ourworldmain/card_game_module/components/player_info.dart';
 import 'package:provider/provider.dart';
-import 'package:streaming_post_demo/card_game_module/components/player_info.dart';
 
 import '../models/card_model.dart';
 import '../models/player_model.dart';

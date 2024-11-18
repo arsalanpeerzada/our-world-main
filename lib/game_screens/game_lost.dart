@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:streaming_post_demo/main_screen/ui/main_screen.dart';
 
 import '../choose_game/ui/gamesoptionscreen.dart';
 import '../live_screen/ui/live_screen.dart';

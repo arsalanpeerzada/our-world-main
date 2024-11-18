@@ -7,8 +7,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:streaming_post_demo/constants/storage_constants.dart';
-import 'package:streaming_post_demo/constants/string_constants.dart';
+import 'package:ourworldmain/constants/storage_constants.dart';
+import 'package:ourworldmain/constants/string_constants.dart';
 import 'package:video_player/video_player.dart';
 
 import '../../common/widgets.dart';

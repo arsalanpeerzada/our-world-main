@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:streaming_post_demo/game_screens/chessgame.dart';
-import 'package:streaming_post_demo/live_screen/model/streaming_request_model.dart';
-import 'package:streaming_post_demo/payment_screens/ui/payment_method.dart';
+import 'package:ourworldmain/live_screen/model/streaming_request_model.dart';
+import 'package:ourworldmain/payment_screens/ui/payment_method.dart';
 
 import '../live_screen/controller/live_controller.dart';
 

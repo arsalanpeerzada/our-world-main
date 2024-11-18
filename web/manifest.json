@@ -1,6 +1,6 @@
 {
-    "name": "streaming_post_demo",
-    "short_name": "streaming_post_demo",
+    "name": "ourworldmain",
+    "short_name": "ourworldmain",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

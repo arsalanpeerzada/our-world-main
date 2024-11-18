@@ -2,8 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:streaming_post_demo/login/login_screen.dart';
-import 'package:streaming_post_demo/register/register_controller.dart';
+import 'package:ourworldmain/login/login_screen.dart';
+import 'package:ourworldmain/register/register_controller.dart';
 
 import '../common/size_config.dart';
 import '../common/widgets.dart';

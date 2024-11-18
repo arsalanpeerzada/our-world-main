@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:streaming_post_demo/card_game_module/screens/game_screen.dart';
-import 'package:streaming_post_demo/live_screen/controller/live_controller.dart';
 
 import '../../game_screens/cardgame.dart';
 import '../../game_screens/chessgame_screen.dart';

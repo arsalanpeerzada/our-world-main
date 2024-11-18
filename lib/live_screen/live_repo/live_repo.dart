@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:streaming_post_demo/constants/api_endpoints.dart';
+import 'package:ourworldmain/constants/api_endpoints.dart';
 
 import '../../common/widgets.dart';
 import '../../constants/storage_constants.dart';

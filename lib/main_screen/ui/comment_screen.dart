@@ -2,9 +2,9 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:streaming_post_demo/constants/string_constants.dart';
-import 'package:streaming_post_demo/main_screen/controller/comment_controller.dart';
-import 'package:streaming_post_demo/post/model/post_model.dart';
+import 'package:ourworldmain/constants/string_constants.dart';
+import 'package:ourworldmain/main_screen/controller/comment_controller.dart';
+import 'package:ourworldmain/post/model/post_model.dart';
 
 import '../../common/size_config.dart';
 import '../../common/widgets.dart';

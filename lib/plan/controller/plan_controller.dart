@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:streaming_post_demo/constants/storage_constants.dart';
+import 'package:ourworldmain/constants/storage_constants.dart';
 
 import '../../live_screen/ui/live_screen.dart';
 

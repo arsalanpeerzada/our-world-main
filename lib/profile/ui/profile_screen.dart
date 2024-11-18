@@ -4,10 +4,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:streaming_post_demo/constants/string_constants.dart';
-import 'package:streaming_post_demo/profile/controller/profile_controller.dart';
-import 'package:streaming_post_demo/profile/model/profile_model.dart';
-import 'package:streaming_post_demo/profile/ui/video_player_screen.dart';
+import 'package:ourworldmain/constants/string_constants.dart';
+import 'package:ourworldmain/profile/controller/profile_controller.dart';
+import 'package:ourworldmain/profile/model/profile_model.dart';
+import 'package:ourworldmain/profile/ui/video_player_screen.dart';
 
 import '../../common/size_config.dart';
 import '../../common/widgets.dart';

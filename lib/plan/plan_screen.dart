@@ -4,8 +4,8 @@ import 'package:flutter_paypal/flutter_paypal.dart';
 import 'package:get/get.dart';
 import 'package:get/get_utils/get_utils.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:streaming_post_demo/constants/string_constants.dart';
-import 'package:streaming_post_demo/live_screen/ui/live_screen.dart';
+import 'package:ourworldmain/constants/string_constants.dart';
+
 
 import '../common/size_config.dart';
 import '../common/widgets.dart';

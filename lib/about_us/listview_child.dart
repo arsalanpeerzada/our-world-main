@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:streaming_post_demo/common/size_config.dart';
+import 'package:ourworldmain/common/size_config.dart';
+
 
 class AboutUsListViewChild extends StatelessWidget {
   final Widget icon;

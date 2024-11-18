@@ -1,10 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:streaming_post_demo/constants/app_images.dart';
-import 'package:streaming_post_demo/follow_requests/controller/follow_requests_controller.dart';
-import 'package:streaming_post_demo/my_clients/controller/my_clients_controller.dart';
-import 'package:streaming_post_demo/profile/model/profile_model.dart';
+import 'package:ourworldmain/my_clients/controller/my_clients_controller.dart';
+import 'package:ourworldmain/profile/model/profile_model.dart';
 
 import '../../common/size_config.dart';
 import '../../common/widgets.dart';

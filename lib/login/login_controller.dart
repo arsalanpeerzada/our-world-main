@@ -4,8 +4,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:streaming_post_demo/common/widgets.dart';
-import 'package:streaming_post_demo/constants/storage_constants.dart';
+import 'package:ourworldmain/common/widgets.dart';
+import 'package:ourworldmain/constants/storage_constants.dart';
 
 import '../constants/string_constants.dart';
 import '../main_screen/ui/main_screen.dart';

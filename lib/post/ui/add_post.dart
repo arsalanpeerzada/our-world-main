@@ -2,12 +2,12 @@ import 'dart:io';
 import 'package:dropdown_button2/src/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:streaming_post_demo/common/size_config.dart';
-import 'package:streaming_post_demo/common/widgets.dart';
-import 'package:streaming_post_demo/constants/app_colors.dart';
-import 'package:streaming_post_demo/constants/string_constants.dart';
-import 'package:streaming_post_demo/post/controller/post_controller.dart';
-import 'package:streaming_post_demo/terms/view.dart';
+import 'package:ourworldmain/common/size_config.dart';
+import 'package:ourworldmain/common/widgets.dart';
+import 'package:ourworldmain/constants/app_colors.dart';
+import 'package:ourworldmain/constants/string_constants.dart';
+import 'package:ourworldmain/post/controller/post_controller.dart';
+import 'package:ourworldmain/terms/view.dart';
 
 import '../../constants/app_images.dart';
 

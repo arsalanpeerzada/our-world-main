@@ -10,12 +10,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
+import 'package:ourworldmain/common/widgets.dart';
+import 'package:ourworldmain/live_screen/model/live_audience_model.dart';
+import 'package:ourworldmain/live_screen/model/streaming_request_model.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:streaming_post_demo/common/widgets.dart';
-import 'package:streaming_post_demo/constants/api_endpoints.dart';
-import 'package:streaming_post_demo/live_screen/model/live_audience_model.dart';
-import 'package:streaming_post_demo/live_screen/model/streaming_request_model.dart';
 
 import '../../common/size_config.dart';
 import '../../constants/app_colors.dart';
