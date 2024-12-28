@@ -1,9 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -29,7 +26,7 @@ class MainScreenController extends GetxController {
   var username = "".obs;
   var selectedCountry = 0.obs;
   var selectedCategory = 0.obs;
-  late final FirebaseMessaging _messaging;
+
   Timer? _timerForInter;
   BannerAd? _bannerAd;
   InterstitialAd? _interstitialAd;
@@ -114,10 +111,7 @@ class MainScreenController extends GetxController {
   }
 
   Future reportPost(String postId, String report) async {
-    await FirebaseFirestore.instance
-        .collection('reports')
-        .add({'postId': postId, 'report': report});
-    hidePost(postId);
+
   }
 
   Future blockUser(String postId, String report) async {
@@ -275,47 +269,7 @@ class MainScreenController extends GetxController {
   filterButtonTap() async {
     postList.clear();
     duplicatePostList.clear();
-    await FirebaseFirestore.instance
-        .collection("posts")
-        .where('country', isEqualTo: selectedCountry.value)
-        .where('category', isEqualTo: selectedCategory.value)
-        .get()
-        .then((value) async {
-      for (var i in value.docs) {
-        var imageList = <Images>[];
-        if (i.data()['images'] != null && i.data()['images'] != []) {
-          for (int j = 0; j < i.data()['images'].length; j++) {
-            imageList.add(Images(i.data()['images'][j]));
-          }
-        }
-        var commentList = <Comments>[];
-        if (i.data()['comments'] != null && i.data()['comments'] != []) {
-          for (int k = 0; k < i.data()['comments'].length; k++) {
-            commentList.add(Comments(
-                i.data()['comments'][k]['comment'],
-                i.data()['comments'][k]['username'] ?? "",
-                i.data()['comments'][k]['userId'] ?? "",
-                i.data()['comments'][k]['timestamp'].toString() ?? "",
-                i.data()['comments'][k]['image'].toString() ?? ""));
-          }
-        }
 
-        postList.add(PostModel(
-            i.id,
-            i.data()['userId'] ?? "",
-            i.data()['username'] ?? "",
-            i.data()['text'] ?? "",
-            i.data()['timestamp'].toString() ?? "",
-            i.data()['country'] ?? 0,
-            i.data()['category'] ?? 0,
-            imageList ?? [],
-            commentList ?? []));
-      }
-      await Future.delayed(Duration.zero);
-      username.value = store.read(userName) ?? "";
-      postList.refresh();
-      duplicatePostList.addAll(postList);
-    });
   }
 
   fetchPosts() async {
@@ -324,45 +278,6 @@ class MainScreenController extends GetxController {
     Future.delayed(const Duration(milliseconds: 500), () async {
       postList.clear();
       duplicatePostList.clear();
-      await FirebaseFirestore.instance
-          .collection("posts")
-          .get()
-          .then((value) async {
-        for (var i in value.docs) {
-          var imageList = <Images>[];
-          if (i.data()['images'] != null && i.data()['images'] != []) {
-            for (int j = 0; j < i.data()['images'].length; j++) {
-              imageList.add(Images(i.data()['images'][j]));
-            }
-          }
-          var commentList = <Comments>[];
-          if (i.data()['comments'] != null && i.data()['comments'] != []) {
-            for (int k = 0; k < i.data()['comments'].length; k++) {
-              commentList.add(Comments(
-                  i.data()['comments'][k]['comment'],
-                  i.data()['comments'][k]['username'] ?? "",
-                  i.data()['comments'][k]['userId'] ?? "",
-                  i.data()['comments'][k]['timestamp'].toString() ?? "",
-                  i.data()['comments'][k]['image'].toString() ?? ""));
-            }
-          }
-
-          postList.add(PostModel(
-              i.id,
-              i.data()['userId'] ?? "",
-              i.data()['username'] ?? "",
-              i.data()['text'] ?? "",
-              i.data()['timestamp'].toString() ?? "",
-              int.parse(i.data()['country'].toString()) ?? 0,
-              i.data()['category'] ?? 0,
-              imageList ?? [],
-              commentList ?? []));
-        }
-        await Future.delayed(Duration.zero);
-        username.value = store.read(userName) ?? "";
-        postList.refresh();
-        duplicatePostList.addAll(postList);
-      });
     });
   }
 
@@ -479,7 +394,7 @@ class MainScreenController extends GetxController {
                           onTap: () async {
                             store.erase();
                             username.value = "";
-                            await FirebaseAuth.instance.signOut();
+                           // await FirebaseAuth.instance.signOut();
                             Get.offAll(() => MainScreen());
                             Get.back();
                           },

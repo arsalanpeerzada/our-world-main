@@ -1,6 +1,5 @@
 import 'package:flutter_paypal/flutter_paypal.dart';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -25,14 +24,6 @@ class PlanController extends GetxController {
 
   activateFree() async {
     String uid = store.read(userId);
-    FirebaseFirestore.instance.collection('users').doc(uid).set({
-      'membershipDate':
-          Timestamp.fromDate(DateTime.now().add(Duration(days: 3)))
-    }, SetOptions(merge: true)).then((res) async {
-      await store.write(membershipDate,
-          DateTime.now().add(Duration(days: 7)).toUtc().millisecondsSinceEpoch);
-      Get.off(() => const LiveScreen(isHost: true,streamingUserIds:  "", streamingToken: "", streamingJoiningId: "0", groupStreaming: false, hostId: "0",channelName:  ''));
-    });
   }
 
   showPaypal(BuildContext context, String price, String title, int days) {
@@ -92,18 +83,6 @@ class PlanController extends GetxController {
             onSuccess: (Map params) async {
               print("onSuccess: $params");
               String uid = store.read(userId);
-              FirebaseFirestore.instance.collection('users').doc(uid).set({
-                'membershipDate':
-                    Timestamp.fromDate(DateTime.now().add(Duration(days: days)))
-              }, SetOptions(merge: true)).then((res) async {
-                await store.write(
-                    membershipDate,
-                    DateTime.now()
-                        .add(Duration(days: days))
-                        .toUtc()
-                        .millisecondsSinceEpoch);
-                Get.off(() => const LiveScreen(isHost: true,streamingUserIds:  "", streamingToken: "", streamingJoiningId: "0", groupStreaming: false, hostId: "0",channelName:  ''));
-              });
             },
             onError: (error) {
               print("onError: $error");

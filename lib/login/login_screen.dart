@@ -1,158 +1,112 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:ourworldmain/constants/string_constants.dart';
 import 'package:ourworldmain/register/register_screen.dart';
 import '../common/size_config.dart';
 import '../common/widgets.dart';
 import '../constants/app_colors.dart';
-import 'login_controller.dart';
-
+import 'package:http/http.dart' as http;
 class LoginScreen extends StatelessWidget {
-  var controller = Get.put(LoginController());
-
   LoginScreen({super.key});
+
+  // Replace Firebase controller with a dummy controller
+  var isLoading = false.obs;
+  var isOtpSent = false.obs;
+
+  final nameController = TextEditingController();
+  final phoneController = TextEditingController();
+  final passwordController = TextEditingController();
+ // final otpController = TextEditingController();
+
+  Future<void> login() async {
+    // Placeholder for login logic
+    var headers = {
+      'Content-Type': 'application/json',
+      'Cookie': 'JSESSIONID=B440A76F435E86CC709C9EDBE8B70EA6'
+    };
+    var request = http.Request('POST', Uri.parse('http://44.219.174.122:8080/api/auth/login'));
+    request.body = json.encode({
+      "username": "Arsalan",
+      "password": "123456789"
+    });
+    request.headers.addAll(headers);
+
+    http.StreamedResponse response = await request.send();
+
+    if (response.statusCode == 200) {
+      Get.snackbar(
+          "Alert",
+          "Login Successful",
+          snackPosition: SnackPosition.BOTTOM);
+    }
+    else {
+      Get.snackbar(
+          "Success!!",
+          "Username or Password is incorrect",
+          snackPosition: SnackPosition.BOTTOM);
+    }
+
+  }
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-        child: Scaffold(
-      backgroundColor: colorWhite,
-      body: Stack(
-        children: [
-          SingleChildScrollView(
-            child: Container(
-              margin: const EdgeInsets.only(left: 20, right: 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(
-                    height: SizeConfig.blockSizeVertical * 4,
-                  ),
-                  Center(
-                    child: headingText(
-                        login.tr, SizeConfig.blockSizeHorizontal * 7, appColor,
-                        weight: FontWeight.w600),
-                  ),
-                  SizedBox(
-                    height: SizeConfig.blockSizeVertical * 5,
-                  ),
-                  headingText(
-                      name.tr, SizeConfig.blockSizeHorizontal * 3.5, colorBlack,
-                      weight: FontWeight.w600),
-                  SizedBox(
-                    height: SizeConfig.blockSizeVertical * 2,
-                  ),
-                  SizedBox(
-                    height: SizeConfig.blockSizeVertical * 6,
-                    child: TextFormField(
-                      controller: controller.nameController.value,
-                      cursorColor: colorRed,
-                      maxLines: 1,
-                      textAlignVertical: TextAlignVertical.bottom,
-                      style: const TextStyle(color: colorBlack),
-                      decoration: InputDecoration(
-                        hintText: name.tr,
-                        hintStyle: const TextStyle(color: colorGrey),
-                        filled: true,
-                        fillColor: colorWhite,
-                        enabledBorder: const OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                          borderSide: BorderSide(color: colorGrey, width: 0.7),
-                        ),
-                        focusedBorder: const OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                          borderSide: BorderSide(color: colorGrey),
-                        ),
-                        errorBorder: UnderlineInputBorder(
-                            borderSide: const BorderSide(color: colorRed),
-                            borderRadius: BorderRadius.circular(5)),
+      child: Scaffold(
+        backgroundColor: colorWhite,
+        body: Stack(
+          children: [
+            SingleChildScrollView(
+              child: Container(
+                margin: const EdgeInsets.only(left: 20, right: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(height: SizeConfig.blockSizeVertical * 4),
+                    Center(
+                      child: headingText(
+                        "Login",
+                        SizeConfig.blockSizeHorizontal * 7,
+                        appColor,
+                        weight: FontWeight.w600,
                       ),
                     ),
-                  ),
-                  SizedBox(
-                    height: SizeConfig.blockSizeVertical * 4,
-                  ),
-                   headingText(
-                      phoneNumber.tr, SizeConfig.blockSizeHorizontal * 3.5, colorBlack,
-                      weight: FontWeight.w600),
-                  SizedBox(
-                    height: SizeConfig.blockSizeVertical * 2,
-                  ),
-                  InkWell(
-                    onTap: (){
-
-                    },
-                    child: SizedBox(
-                      height: SizeConfig.blockSizeVertical * 6,
-                      child: TextFormField(
-                        controller: controller.phoneController.value,
-                        cursorColor: colorRed,
-                        maxLines: 1,
-                        textAlignVertical: TextAlignVertical.bottom,
-                        style: const TextStyle(color: colorBlack),
-                        decoration: InputDecoration(
-                          hintText: phoneNumberHint.tr,
-                          hintStyle: const TextStyle(color: colorGrey),
-                          filled: true,
-                          fillColor: colorWhite,
-                          enabledBorder: const OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                            borderSide: BorderSide(color: colorGrey, width: 0.7),
-                          ),
-                          focusedBorder: const OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                            borderSide: BorderSide(color: colorGrey),
-                          ),
-                          errorBorder: UnderlineInputBorder(
-                              borderSide: const BorderSide(color: colorRed),
-                              borderRadius: BorderRadius.circular(5)),
-                        ),
-                      ),
+                    SizedBox(height: SizeConfig.blockSizeVertical * 5),
+                    headingText(
+                      "Name",
+                      SizeConfig.blockSizeHorizontal * 3.5,
+                      colorBlack,
+                      weight: FontWeight.w600,
                     ),
-                  ),
-                  SizedBox(
-                    height: SizeConfig.blockSizeVertical * 4,
-                  ),
-                  headingText(
-                      password.tr, SizeConfig.blockSizeHorizontal * 3.5, colorBlack,
-                      weight: FontWeight.w600),
-                  SizedBox(
-                    height: SizeConfig.blockSizeVertical * 2,
-                  ),
-                  SizedBox(
-                    height: SizeConfig.blockSizeVertical * 6,
-                    child: TextFormField(
-                      controller: controller.passwordController.value,
+                    SizedBox(height: SizeConfig.blockSizeVertical * 2),
+                    buildTextField(nameController, "Enter your name"),
+                    SizedBox(height: SizeConfig.blockSizeVertical * 4),
+                    headingText(
+                      "Phone Number",
+                      SizeConfig.blockSizeHorizontal * 3.5,
+                      colorBlack,
+                      weight: FontWeight.w600,
+                    ),
+                    SizedBox(height: SizeConfig.blockSizeVertical * 2),
+                    buildTextField(phoneController, "Enter your phone number"),
+                    SizedBox(height: SizeConfig.blockSizeVertical * 4),
+                    headingText(
+                      "Password",
+                      SizeConfig.blockSizeHorizontal * 3.5,
+                      colorBlack,
+                      weight: FontWeight.w600,
+                    ),
+                    SizedBox(height: SizeConfig.blockSizeVertical * 2),
+                    buildTextField(
+                      passwordController,
+                      "Enter your password",
                       obscureText: true,
-                      cursorColor: colorRed,
-                      maxLines: 1,
-                      textAlignVertical: TextAlignVertical.bottom,
-                      style: const TextStyle(color: colorBlack),
-                      decoration: InputDecoration(
-                        hintText: password.tr,
-                        hintStyle: const TextStyle(color: Colors.grey),
-                        filled: true,
-                        fillColor: colorWhite,
-                        enabledBorder: const OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                          borderSide: BorderSide(color: colorGrey, width: 0.7),
-                        ),
-                        focusedBorder: const OutlineInputBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                          borderSide: BorderSide(color: colorGrey),
-                        ),
-                      ),
                     ),
-                  ),
-                  SizedBox(
-                    height: SizeConfig.blockSizeVertical * 3,
-                  ),
-                  Center(
-                    child: ElevatedButton(
-                        onPressed: () {
-                           controller.loginToFirebase();
-                        },
+                    SizedBox(height: SizeConfig.blockSizeVertical * 3),
+                    Center(
+                      child: ElevatedButton(
+                        onPressed: login,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: colorRed,
                           shape: RoundedRectangleBorder(
@@ -161,95 +115,74 @@ class LoginScreen extends StatelessWidget {
                           elevation: 15.0,
                         ),
                         child: SizedBox(
-                            width: SizeConfig.screenWidth / 1.5,
-                            height: SizeConfig.blockSizeVertical * 6,
-                            child: Center(
-                                child: headingText(
-                                    login.tr,
-                                    SizeConfig.blockSizeHorizontal * 4,
-                                    colorWhite)))),
-                  ),
-                  Obx(() =>  controller.isOtpSent.value ==true ?
-                  Column(
-                      children:[
-                        SizedBox(
-                          height: SizeConfig.blockSizeVertical * 5,
-                        ),
-                        headingText(
-                            otpCode.tr, SizeConfig.blockSizeHorizontal * 3.5, colorBlack,
-                            weight: FontWeight.w600),
-                        SizedBox(
-                          height: SizeConfig.blockSizeVertical * 2,
-                        ),
-                        SizedBox(
+                          width: SizeConfig.screenWidth / 1.5,
                           height: SizeConfig.blockSizeVertical * 6,
-                          child: TextFormField(
-                            controller: controller.otpController.value,
-                            cursorColor: colorRed,
-                            maxLines: 1,
-                            textAlignVertical: TextAlignVertical.bottom,
-                            style: const TextStyle(color: colorBlack),
-                            decoration: InputDecoration(
-                              hintText: otpCode.tr,
-                              hintStyle: const TextStyle(color: colorGrey),
-                              filled: true,
-                              fillColor: colorWhite,
-                              enabledBorder: const OutlineInputBorder(
-                                borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                                borderSide: BorderSide(color: colorGrey, width: 0.7),
-                              ),
-                              focusedBorder: const OutlineInputBorder(
-                                borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                                borderSide: BorderSide(color: colorGrey),
-                              ),
-                              errorBorder: UnderlineInputBorder(
-                                  borderSide: const BorderSide(color: colorRed),
-                                  borderRadius: BorderRadius.circular(5)),
+                          child: Center(
+                            child: headingText(
+                              "Login",
+                              SizeConfig.blockSizeHorizontal * 4,
+                              colorWhite,
                             ),
                           ),
                         ),
-                        SizedBox(
-                          height: SizeConfig.blockSizeVertical * 3,
-                        ),
-                        Center(
-                          child: ElevatedButton(
-                              onPressed: () {
-                                controller.otpVerfication();
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: colorRed,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                elevation: 15.0,
-                              ),
-                              child: SizedBox(
-                                  width: SizeConfig.screenWidth / 1.5,
-                                  height: SizeConfig.blockSizeVertical * 6,
-                                  child: Center(
-                                      child: headingText(
-                                          verifyOtp.tr,
-                                          SizeConfig.blockSizeHorizontal * 4,
-                                          colorWhite)))),
-                        ),]) :Container(),),
-                  SizedBox(
-                    height: SizeConfig.blockSizeVertical * 7,
-                  ),
-                  InkWell(
-                    onTap: () {
-                      Get.to(() => RegisterScreen());
-                    },
-                    child: headingText(registerHere.tr,
-                        SizeConfig.blockSizeHorizontal * 3.5, colorBlack,
-                        weight: FontWeight.w600),
-                  ),
-                ],
+                      ),
+                    ),
+                    SizedBox(height: SizeConfig.blockSizeVertical * 7),
+                    InkWell(
+                      onTap: () {
+                        // Placeholder for register navigation
+                        /*Get.snackbar("Info", "Navigate to Register Screen");*/
+                        Get.to(() => RegisterScreen());
+                      },
+                      child: headingText(
+                        "Register Here",
+                        SizeConfig.blockSizeHorizontal * 3.5,
+                        colorBlack,
+                        weight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-          Obx(() => controller.isLoading.value == true ? commonLoader(): Container(),),
-        ],
+            Obx(
+                  () => isLoading.value ? commonLoader() : Container(),
+            ),
+          ],
+        ),
       ),
-    ));
+    );
+  }
+
+  Widget buildTextField(
+      TextEditingController controller,
+      String hint, {
+        bool obscureText = false,
+      }) {
+    return SizedBox(
+      height: SizeConfig.blockSizeVertical * 6,
+      child: TextFormField(
+        controller: controller,
+        obscureText: obscureText,
+        cursorColor: colorRed,
+        maxLines: 1,
+        textAlignVertical: TextAlignVertical.bottom,
+        style: const TextStyle(color: colorBlack),
+        decoration: InputDecoration(
+          hintText: hint,
+          hintStyle: const TextStyle(color: colorGrey),
+          filled: true,
+          fillColor: colorWhite,
+          enabledBorder: const OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(5.0)),
+            borderSide: BorderSide(color: colorGrey, width: 0.7),
+          ),
+          focusedBorder: const OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(5.0)),
+            borderSide: BorderSide(color: colorGrey),
+          ),
+        ),
+      ),
+    );
   }
 }

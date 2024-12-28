@@ -2,10 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -23,18 +19,11 @@ class NotificationPlugin {
   static final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
   static late AndroidNotificationChannel channel;
   static final BehaviorSubject<ReceivedNotification> didReceiveLocalNotificationSubject = BehaviorSubject<ReceivedNotification>();
-  static final FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
   var store = GetStorage();
   final StreamController<String> selectNotificationStream = StreamController<String>.broadcast();
   final StreamController<ReceivedNotification> didReceiveLocalNotificationStream = StreamController<ReceivedNotification>.broadcast();
 
   Future<void> init() async {
-    if (FirebaseAuth.instance.currentUser != null) {
-      await initializePlatformSpecifics();
-      await setupToken();
-      firebaseCloudMessagingListeners();
-      configureDidReceiveLocalNotificationSubject();
-    }
   }
 
   void configureDidReceiveLocalNotificationSubject() {
@@ -53,25 +42,6 @@ class NotificationPlugin {
     });
   }
 
-  void firebaseCloudMessagingListeners() {
-    debugPrint("In listener");
-    FirebaseMessaging.onMessage.listen(showFlutterNotification);
-    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      if (message.toMap()['category'] == 'FLUTTER_NOTIFICATION_CLICK') {
-        // Handle notification click
-      }
-    });
-  }
-
-  Future<void> saveTokenToDatabase(String token) async {
-    if (FirebaseAuth.instance.currentUser != null) {
-      String userId = FirebaseAuth.instance.currentUser!.uid;
-      print("this is token $token");
-      await FirebaseFirestore.instance.collection('users').doc(userId).update({
-        'token': token,
-      });
-    }
-  }
 
   static Future<void> sendNotificationFCM(String token,String title,String body) async {
     FCMData data;
@@ -104,41 +74,12 @@ class NotificationPlugin {
     debugPrint("Notification Response code ${response.statusCode.toString()}");
   }
 
-  Future<void> setupToken() async {
-    String? token = await FirebaseMessaging.instance.getToken();
-    if (token != null && token.isNotEmpty) await saveTokenToDatabase(token);
-    FirebaseMessaging.instance.onTokenRefresh.listen(saveTokenToDatabase);
-  }
-
-  @pragma('vm:entry-point')
-  static Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-    debugPrint("In background handler");
-    await Firebase.initializeApp();
-    await initializePlatformSpecifics();
-    showFlutterNotification(message,from: "background");
-  }
 
   static Future<void> initializePlatformSpecifics() async {
     if (Platform.isIOS) {
       await _requestIOSPermission();
     }
 
-    await firebaseMessaging.subscribeToTopic('live');
-    await firebaseMessaging.requestPermission(
-      sound: true,
-      badge: true,
-      alert: true,
-      announcement: true,
-      carPlay: true,
-      criticalAlert: true,
-      provisional: true
-    );
-    await firebaseMessaging.setAutoInitEnabled(true);
-    await firebaseMessaging.setForegroundNotificationPresentationOptions(
-      alert: true,
-      badge: true,
-      sound: true,
-    );
     channel = const AndroidNotificationChannel(
       'high_importance_channel',
       'High Importance Notifications',
@@ -234,17 +175,6 @@ class NotificationPlugin {
     await flutterLocalNotificationsPlugin.show(Random().nextInt(1000), title, body, notificationDetails);
   }
 
-  static void showFlutterNotification(RemoteMessage messages,
-      {String? from = "listener"}) {
-    debugPrint("I'm showing notification ${DateTime.now()} from $from");
-    if(Platform.isAndroid){
-      Map<String, dynamic> message = messages.data;
-      _showNotifications(message["body"],message["title"]);
-    }
-    else{
-      _showNotifications(messages.notification!.body!,messages.notification!.title!);
-    }
-  }
 
   Future<void> cancelNotification(int id) async {
     await flutterLocalNotificationsPlugin.cancel(id);

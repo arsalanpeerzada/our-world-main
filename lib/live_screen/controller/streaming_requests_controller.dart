@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:ourworldmain/constants/storage_constants.dart';
@@ -43,15 +42,6 @@ class StreamingRequestsController extends GetxController {
         "",
         "",game: game,challengePrice: challengePrice));
 
-    FirebaseFirestore.instance
-        .collection('live_streaming_requests')
-        .doc(userDetails.userId)
-        .set({
-      "requests": requestList.value.map((e) => e.toMap()).toList(),
-    }, SetOptions(merge: true)).then((res) {
-      isLoading.value = false;
-      showMessage("Request sent to ${userDetails.username}");
-    });
     //});
   }
 }

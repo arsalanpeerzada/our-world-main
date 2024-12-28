@@ -1,11 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:http/http.dart' as http;
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -99,21 +96,7 @@ class PostController extends GetxController {
             try {
               var filename =
                   'sightings/${DateTime.now().toUtc().millisecondsSinceEpoch}.png';
-              Reference storageReference =
-                  FirebaseStorage.instance.ref().child(filename);
 
-              storageReference
-                  .putFile(File(imageFileList.value[i].path))
-                  .then((p0) async => {
-                        await FirebaseStorage.instance
-                            .ref()
-                            .child(filename)
-                            .getDownloadURL()
-                            .then((value) async => {
-                                  print("image url --->  $value"),
-                                  imageUrlList.add(value.toString())
-                                })
-                      });
 
             } catch (e) {
               showMessage(e.toString());
@@ -130,14 +113,7 @@ class PostController extends GetxController {
     List<String> tokens = [];
 
     try {
-      QuerySnapshot snapshot = await FirebaseFirestore.instance.collection('users').get();
 
-      for (var doc in snapshot.docs) {
-        var data = doc.data() as Map<String, dynamic>;
-        if (data.containsKey('token')) {
-          tokens.add(data['token']);
-        }
-      }
     } catch (e) {
       print('Error getting tokens: $e');
     }
@@ -158,31 +134,6 @@ class PostController extends GetxController {
     };
     showDebugPrint("userid ------------->  ${store.read(userId)}");
 
-    await FirebaseFirestore.instance
-        .collection("posts")
-        .doc(store.read(userId))
-        .set({
-      'userId': store.read(userId),
-      'username': store.read(userName),
-      'country': selectedCountry.value,
-      'category': selectedCategory.value,
-      'text': textController.value.text.trim(),
-      'timestamp': (DateTime.now().toUtc().millisecondsSinceEpoch).toString(),
-      'images': imageUrlList.value,
-      'comments': commentList.value
-    }).then((value) async => {
-    await NotificationPlugin.sendNotificationFCM("/topics/live", newPost.tr, '${store.read(userName)} ${createdNewPost.tr}'),
-
-        showMessage(postShareSuccessfully.tr),
-              isLoading.value = false,
-              Get.to(() => MainScreen()),
-              selectedCountry.value = 0,
-              selectedCategory.value = 0,
-              textController.value.text = "",
-              imageFileList.clear(),
-              imageUrlList.clear(),
-              commentList.clear(),
-            });
   }
 
   void uploadingConditionCheck() {
@@ -196,73 +147,10 @@ class PostController extends GetxController {
   }
 
   fetchUserPost() async {
-    await FirebaseFirestore.instance
-        .collection("posts")
-        .doc(store.read(userId))
-        .get()
-        .then((value) {
-      isLoading.value = true;
-      var imageList = <Images>[];
-      if (value.data() != null && value.data()!['images'] != null) {
-        if (value.data()!['images'] != null && value.data()!['images'] != []) {
-          for (int j = 0; j < value.data()!['images'].length; j++) {
-            imageList.add(Images(value.data()!['images'][j]));
-            imageUrlList.add(value.data()!['images'][j]);
-          }
-        }
-      }
 
-      /*    if (value.data() != null && value.data()!['comments'] != null && value.data()!['comments'] != []) {
-        for (int k = 0; k < value.data()!['comments'].length; k++) {
-          commentList.add(Comments(
-              value.data()!['comments'][k]['comment'] ?? "",
-              value.data()!['comments'][k]['username'] ?? "",
-              value.data()!['comments'][k]['userId'] ?? "",
-              value.data()!['comments'][k]['timestamp'].toString() ?? "",
-              value.data()!['comments'][k]['image'].toString() ?? "")
-          );
-        }
-      }*/
-      isLoading.value = false;
-      postData.value.id = value.id;
-      postData.value.userId =
-          value.data() != null ? value.data()!['userId'] : "";
-      postData.value.username =
-          value.data() != null ? value.data()!['username'] : "";
-      postData.value.text = value.data() != null ? value.data()!['text'] : "";
-      postData.value.timestamp =
-          value.data() != null ? value.data()!['timestamp'] : "";
-      postData.value.country =
-          value.data() != null ? value.data()!['country'] : 0;
-      postData.value.category =
-          value.data() != null ? value.data()!['category'] : 0;
-      postData.value.images = imageList;
-      postData.value.comments = commentList;
-      selectedCountry.value = int.parse(postData.value.country.toString());
-      selectedCategory.value = postData.value.category!;
-
-      textController.value.text = postData.value.text.toString();
-      imageUrlList.refresh();
-      postData.refresh();
-    });
   }
 
   void deletePostButtonClick() {
-    FirebaseFirestore.instance
-        .collection("posts")
-        .doc(store.read(userId))
-        .delete()
-        .then((value) {
-      showMessage(postDeletedSuccessfully.tr);
-      isLoading.value = false;
-      Get.to(() => MainScreen());
-      selectedCountry.value = 0;
-      selectedCategory.value = 0;
-      textController.value.text = "";
-      imageFileList.clear();
-      imageUrlList.clear();
-      commentList.clear();
-    });
   }
 
   void showLoginDialog() {

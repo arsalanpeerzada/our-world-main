@@ -1,9 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -31,16 +28,6 @@ class CommentController extends GetxController {
 
   fetchComments() async {
     commentList.value.clear();
-    await FirebaseFirestore.instance
-        .collection("posts")
-        .doc(commentId.value)
-        .get()
-        .then((value) {
-      for (int i = 0; i < value.data()!['comments'].length; i++) {
-        commentList.value.add(Comments.fromJson(value.data()!['comments'][i]));
-      }
-      commentList.refresh();
-    });
   }
 
 
@@ -57,21 +44,6 @@ class CommentController extends GetxController {
         if (commentImage != null) {
           try {
             var filename = 'sightings/comments/${DateTime.now().toUtc().millisecondsSinceEpoch}.png';
-            Reference storageReference =
-                FirebaseStorage.instance.ref().child(filename);
-            storageReference
-                .putFile(File(commentImage!.path))
-                .then((p0) async => {
-                      await FirebaseStorage.instance
-                          .ref()
-                          .child(filename)
-                          .getDownloadURL()
-                          .then((value) => {
-                                print("image url --->  $value"),
-                                imageUrl = value.toString(),
-                                uploadComment(imageUrl,user),
-                              })
-                    });
           } catch (e) {
             showDebugPrint("Image upload excaption ----------->  $e");
           }
@@ -97,15 +69,6 @@ class CommentController extends GetxController {
   }
   Future<String?> getTokenByUserId(String userId) async {
     try {
-      DocumentSnapshot doc = await FirebaseFirestore.instance.collection('users').doc(userId).get();
-
-      if (doc.exists) {
-        var data = doc.data() as Map<String, dynamic>;
-        return data['token'] as String?;
-      } else {
-        print('No user found with the given ID.');
-        return null;
-      }
     } catch (e) {
       print('Error getting token: $e');
       return null;
@@ -124,16 +87,6 @@ class CommentController extends GetxController {
         (DateTime.now().toUtc().millisecondsSinceEpoch).toString(),
         imageUrl));
 
-    FirebaseFirestore.instance.collection('posts').doc(commentId.value).set({
-      'comments': commentList.value.map((e) => e.toMap()).toList(),
-    }, SetOptions(merge: true)).then((value) => {
-          commentList.refresh(),
-          commentController.value.text = "",
-          commentImage = null,
-          commentImagePath.value = "",
-          isLoading.value = false,
-          showMessage("Message sent successfully")
-        });
   }
 
   void showLoginDialog() {

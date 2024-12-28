@@ -1,7 +1,6 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
 import 'package:ourworldmain/login/login_screen.dart';
 import 'package:ourworldmain/register/register_controller.dart';
 
@@ -20,7 +19,6 @@ class RegisterScreen extends StatelessWidget{
           backgroundColor: colorWhite,
           body:Stack(
             children: [
-
               SingleChildScrollView(
                 child: Container(
                   margin: const EdgeInsets.only(left: 20, right: 20),
@@ -49,7 +47,8 @@ class RegisterScreen extends StatelessWidget{
                         child: TextFormField(
                           controller: controller.nameController.value,
                           cursorColor: colorRed,
-                          maxLines: 1,
+                      inputFormatters: [LengthLimitingTextInputFormatter(20)],
+                      maxLines: 1,
                           textAlignVertical: TextAlignVertical.bottom,
                           style: const TextStyle(color: colorBlack),
                           decoration: InputDecoration(
@@ -87,7 +86,12 @@ class RegisterScreen extends StatelessWidget{
                           controller: controller.phoneController.value,
                           cursorColor: colorRed,
                           maxLines: 1,
-                          textAlignVertical: TextAlignVertical.bottom,
+                      inputFormatters: [
+                        LengthLimitingTextInputFormatter(12),
+                        FilteringTextInputFormatter.digitsOnly
+                      ],
+                      keyboardType: TextInputType.phone,
+                      textAlignVertical: TextAlignVertical.bottom,
                           style: const TextStyle(color: colorBlack),
                           decoration: InputDecoration(
                             hintText: phoneNumberHint.tr,
@@ -122,7 +126,8 @@ class RegisterScreen extends StatelessWidget{
                         height: SizeConfig.blockSizeVertical * 6,
                         child: TextFormField(
                           controller: controller.passwordController.value,
-                          obscureText: true,
+                      inputFormatters: [LengthLimitingTextInputFormatter(20)],
+                      obscureText: true,
                           cursorColor: colorRed,
                           maxLines: 1,
                           textAlignVertical: TextAlignVertical.bottom,
@@ -149,8 +154,8 @@ class RegisterScreen extends StatelessWidget{
                       Center(
                         child: ElevatedButton(
                             onPressed: () {
-                               controller.registerToFirebase();
-                            },
+                          controller.register();
+                        },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: colorRed,
                               shape: RoundedRectangleBorder(
@@ -167,69 +172,6 @@ class RegisterScreen extends StatelessWidget{
                                         SizeConfig.blockSizeHorizontal * 4,
                                         colorWhite)))),
                       ),
-                   Obx(() =>  controller.isOtpSent.value ==true ?
-                   Column(
-                       children:[
-                         SizedBox(
-                        height: SizeConfig.blockSizeVertical * 5,
-                      ),
-                      headingText(
-                          otpCode.tr, SizeConfig.blockSizeHorizontal * 3.5, colorBlack,
-                          weight: FontWeight.w600),
-                      SizedBox(
-                        height: SizeConfig.blockSizeVertical * 2,
-                      ),
-                      SizedBox(
-                        height: SizeConfig.blockSizeVertical * 6,
-                        child: TextFormField(
-                          controller: controller.otpController.value,
-                          cursorColor: colorRed,
-                          maxLines: 1,
-                          textAlignVertical: TextAlignVertical.bottom,
-                          style: const TextStyle(color: colorBlack),
-                          decoration: InputDecoration(
-                            hintText: otpCode.tr,
-                            hintStyle: const TextStyle(color: colorGrey),
-                            filled: true,
-                            fillColor: colorWhite,
-                            enabledBorder: const OutlineInputBorder(
-                              borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                              borderSide: BorderSide(color: colorGrey, width: 0.7),
-                            ),
-                            focusedBorder: const OutlineInputBorder(
-                              borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                              borderSide: BorderSide(color: colorGrey),
-                            ),
-                            errorBorder: UnderlineInputBorder(
-                                borderSide: const BorderSide(color: colorRed),
-                                borderRadius: BorderRadius.circular(5)),
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        height: SizeConfig.blockSizeVertical * 3,
-                      ),
-                      Center(
-                        child: ElevatedButton(
-                            onPressed: () {
-                              controller.otpVerfication();
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: colorRed,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              elevation: 15.0,
-                            ),
-                            child: SizedBox(
-                                width: SizeConfig.screenWidth / 1.5,
-                                height: SizeConfig.blockSizeVertical * 6,
-                                child: Center(
-                                    child: headingText(
-                                        verifyOtp.tr,
-                                        SizeConfig.blockSizeHorizontal * 4,
-                                        colorWhite)))),
-                      ),]) :Container(),),
                       SizedBox(
                         height: SizeConfig.blockSizeVertical * 7,
                       ),

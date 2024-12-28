@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:get/get.dart';
 import 'package:ourworldmain/live_screen/model/streaming_request_model.dart';
 
@@ -14,49 +14,13 @@ class FollowRequestsController extends GetxController {
   var requestsList = <StreamingRequestsModel>[].obs;
 
   fetchFollowingRequests(String userID) async {
-    await FirebaseFirestore.instance
-        .collection("live_streaming_requests")
-        .doc(userID)
-        .get()
-        .then((value) {
-      if (value.data() != null && value.data()!['requests'] != null) {
-        if (value.data()!['requests'] != null &&
-            value.data()!['requests'] != []) {
-          for (int j = 0; j < value.data()!['requests'].length; j++) {
-            requestsList.add(StreamingRequestsModel(
-              value.data()!['requests'][j]['senderUserId'],
-              value.data()!['requests'][j]['receiverUserId'],
-              value.data()!['requests'][j]['senderUsername'],
-              value.data()!['requests'][j]['senderUserCountry'],
-              value.data()!['requests'][j]['senderUserImage'],
-              value.data()!['requests'][j]['streamingToken'],
-              value.data()!['requests'][j]['streamingChannel'],
-              value.data()!['requests'][j]['hasAccepted'],
-              value.data()!['requests'][j]['chatToken'],
-              value.data()!['requests'][j]['remoteID'],
-              value.data()!['requests'][j]['hostID'],
-              game: value.data()!['requests'][j]['game'],
-              challengePrice: value.data()!['requests'][j]['challengePrice']
-            ));
-          }
-        }
-      }
-      requestsList.refresh();
-    });
+
   }
 
   void deleteStreamingRequest(int index) {
     requestsList.removeAt(index);
     requestsList.refresh();
 
-    FirebaseFirestore.instance
-        .collection('live_streaming_requests')
-        .doc(userID.value)
-        .set({
-      "requests": requestsList.value.map((e) => e.toMap()).toList(),
-    }, SetOptions(merge: true)).then((res) {
-      showMessage(dataUpdatedSuccessfully.tr);
-    });
   }
 
   void acceptFollowRequest(
@@ -69,14 +33,5 @@ class FollowRequestsController extends GetxController {
   }
 
   setRequestAccept(String senderId) async {
-    FirebaseFirestore.instance
-        .collection('accepted_live_request')
-        .doc(senderId)
-        .set({
-      "senderId": senderId,
-      "accept": "true",
-    }, SetOptions(merge: true)).then((res) {
-      Get.back();
-    });
   }
 }

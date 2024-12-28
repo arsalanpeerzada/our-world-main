@@ -1,10 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 
-// import 'package:agora_rtc_engine/agora_rtc_engine.dart';
-// import 'package:agora_rtm/agora_rtm.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -202,14 +198,7 @@ class LiveController extends GetxController {
 
   removeRequest(String uid, List<StreamingRequestsModel> streamingList) async {
     streamingList.removeWhere((element) => element.senderUserId == uid);
-    FirebaseFirestore.instance
-        .collection('live_streaming_requests')
-        .doc(streamingUserId.value)
-        .set({
-      "requests": streamingList.map((e) => e.toMap()).toList(),
-    }, SetOptions(merge: true)).then((res) {
-      isLoading.value = false;
-    });
+
   }
 
   rejoinAsBroadcaster() async {
@@ -248,18 +237,13 @@ class LiveController extends GetxController {
 
   Future<void> updateLiveStreamingRequests(List<StreamingRequestsModel> streamingList) async {
     try {
-      await FirebaseFirestore.instance
-          .collection('live_streaming_requests')
-          .doc(streamingUserId.value)
-          .update({
-        "requests": streamingList.map((e) => e.toMap()).toList(),
-      });
+
     } catch (e) {
       print("Failed to update live_streaming_requests: $e");
       rethrow;
     }
   }
-  Future<List<Map<String, dynamic>>> fetchAcceptedRequests(String streamingUserId) async {
+/*  Future<List<Map<String, dynamic>>> fetchAcceptedRequests(String streamingUserId) async {
     try {
       DocumentSnapshot snapshot = await FirebaseFirestore.instance
           .collection('accepted_live_request')
@@ -278,8 +262,8 @@ class LiveController extends GetxController {
       print("Failed to fetch accepted requests: $e");
       rethrow;
     }
-  }
-  Future<List<Map<String, dynamic>>> fetchStreamingRequests(String streamingUserId) async {
+  }*/
+/*  Future<List<Map<String, dynamic>>> fetchStreamingRequests(String streamingUserId) async {
     try {
       DocumentSnapshot snapshot = await FirebaseFirestore.instance
           .collection('live_streaming_requests')
@@ -298,52 +282,29 @@ class LiveController extends GetxController {
       print("Failed to fetch accepted requests: $e");
       rethrow;
     }
-  }
+  }*/
 
 
 
   Future<void> acceptRequest(String uid, List<StreamingRequestsModel> streamingList, StreamingRequestsModel model) async {
-    List<Map<String, dynamic>> acceptedUsers = await fetchAcceptedRequests(streamingUserId.value);
-    acceptedUsers.add({
-      'senderId': uid,
-      'accepted': true,
-      'mute': false,
-      'uid': int.parse(model.remoteID!)
-    });
-    await FirebaseFirestore.instance
-        .collection('accepted_live_request')
-        .doc(streamingUserId.value)
-        .set({
-      "requests": acceptedUsers,
-    });
-    Future.delayed(const Duration(seconds: 1),() async {
-      removeRequest(uid,streamingList);
-      // List<Map<String, dynamic>> streamingRequests = await fetchStreamingRequests(streamingUserId.value);
-      // streamingRequests.removeWhere((map) => map['senderUserId'] == userID.value);
-      // await FirebaseFirestore.instance
-      //     .collection('live_streaming_requests')
-      //     .doc(streamingUserId.value)
-      //     .set({
-      //   "requests": streamingRequests,
-      // });
-    });
+
   }
 
 
 
 
   Future removeRequests() async {
-    try {
+   /* try {
       FirebaseFirestore.instance
           .collection('live_streaming_requests')
           .doc(streamingUserId.value)
           .delete();
-    } catch (e) {}
+    } catch (e) {}*/
   }
-  Future<bool> isSenderIdEqualToUserId(String userId) async {
+/*  Future<bool> isSenderIdEqualToUserId(String userId) async {
     try {
       if(!isHost.value){
-        DocumentSnapshot doc = await FirebaseFirestore.instance
+      *//*  DocumentSnapshot doc = await FirebaseFirestore.instance
             .collection('accepted_live_request')
             .doc(streamingUserId.value)
             .get();
@@ -355,7 +316,7 @@ class LiveController extends GetxController {
         } else {
           print('No document found with the given ID.');
           return false;
-        }
+        }*//*
       }
       else{
         return true;
@@ -367,10 +328,10 @@ class LiveController extends GetxController {
       }
       return false;
     }
-  }
+  }*/
 
   void listenToAcceptedRequests() {
-    FirebaseFirestore.instance
+    /*FirebaseFirestore.instance
         .collection('accepted_live_request')
         .doc(streamingUserId.value)
         .snapshots()
@@ -400,11 +361,11 @@ class LiveController extends GetxController {
           }
         }
       }
-    });
+    });*/
   }
 
   void listenToGuestMics() {
-    FirebaseFirestore.instance
+   /* FirebaseFirestore.instance
         .collection('accepted_live_request')
         .doc(streamingUserId.value.isNotEmpty?streamingUserId.value:userID.value)
         .snapshots()
@@ -423,11 +384,11 @@ class LiveController extends GetxController {
               }
             }
           }
-        });
+        });*/
   }
 
   void listenToHostMics() {
-    FirebaseFirestore.instance
+    /*FirebaseFirestore.instance
         .collection('accepted_live_request')
         .doc(streamingUserId.value.isNotEmpty?streamingUserId.value:userID.value)
         .snapshots()
@@ -442,12 +403,12 @@ class LiveController extends GetxController {
               }
             }
           }
-        });
+        });*/
   }
 
   void listenToStreamEnd() {
 
-    FirebaseFirestore.instance
+ /*   FirebaseFirestore.instance
         .collection('live_streaming')
         .doc(streamingUserId.value.isNotEmpty?streamingUserId.value:userID.value)
         .snapshots()
@@ -456,7 +417,7 @@ class LiveController extends GetxController {
       if (data == null || data["streaming_channel"] != channelName.value) {
         backPressButton();
       }
-    });
+    });*/
   }
 
 
@@ -729,7 +690,7 @@ class LiveController extends GetxController {
 
 
   void sendMessage() async {
-    await FirebaseFirestore.instance
+/*    await FirebaseFirestore.instance
         .collection('stream_chat')
         .doc(streamingUserId.value.isNotEmpty?streamingUserId.value:userID.value)
         .collection('messages')
@@ -738,7 +699,7 @@ class LiveController extends GetxController {
       'userId': store.read(userId),
       'userName': store.read(userName),
       'date': Timestamp.fromDate(DateTime.now())
-    });
+    });*/
     messageController.value.clear();
   }
 
@@ -747,7 +708,7 @@ class LiveController extends GetxController {
     print('cleaning ${userID.value}');
     print('~~~~~~~~~~~');
 
-    final instance = FirebaseFirestore.instance;
+ /*   final instance = FirebaseFirestore.instance;
     final batch = instance.batch();
     var collection = instance
         .collection('stream_chat')
@@ -757,15 +718,15 @@ class LiveController extends GetxController {
     for (var doc in snapshots.docs) {
       batch.delete(doc.reference);
     }
-    await batch.commit();
+    await batch.commit();*/
   }
 
   Future clearAccepted() async {
     if (userID.value.isNotEmpty) {
-      await FirebaseFirestore.instance
+      /*await FirebaseFirestore.instance
           .collection('accepted_live_request')
           .doc(userID.value)
-          .delete();
+          .delete();*/
     }
   }
 
@@ -838,73 +799,19 @@ class LiveController extends GetxController {
   /*--------------------FIREBASE DATA FETCHING START--------------------------------*/
   void goOffline() async {
     if (isHost.value) {
-      DocumentSnapshot<Map<String, dynamic>> documentSnapshot =
-          await FirebaseFirestore.instance
-              .collection('accepted_live_request')
-              .doc(streamingUserId.value.isNotEmpty?streamingUserId.value:userID.value)
-              .get();
-
-      if (documentSnapshot.exists &&
-          documentSnapshot.data() != null &&
-          documentSnapshot.data()!['requests'] != null) {
-        List list = documentSnapshot.data()!['requests'];
-        list.removeWhere((element) => element['senderId'] == userID.value);
-        await FirebaseFirestore.instance
-            .collection('accepted_live_request')
-            .doc(streamingUserId.value.isNotEmpty?streamingUserId.value:userID.value)
-            .update({'requests': list});
-      }
     }
     await removeRequests();
     await clearAccepted();
     await clearMessages();
-    if (userID.value.isNotEmpty) {
-      FirebaseFirestore.instance
-          .collection("live_streaming")
-          .doc(userID.value)
-          .delete()
-          .then((value) {
-        showMessage(postDeletedSuccessfully.tr);
-        isLoading.value = false;
-      });
-    } else {
-      showMessage(postDeletedSuccessfully.tr);
-      isLoading.value = false;
-    }
    // await agoraEngine!.release();
   }
 
   Future<void> updateLiveStreamingData() async {
     showDebugPrint("inside the update live streaming data-------------------");
-    await FirebaseFirestore.instance
-        .collection('live_streaming')
-        .doc(userID.value)
-        .set({
-      "user_id": userID.value,
-      "agora_user_id": uid.value,
-      "streaming_token": token.value,
-      "streaming_channel": channelName.value,
-      "chat_token": chatToken.value,
-      "user_image": userData.value.profileImage,
-      "user_name": userData.value.username,
-    }, SetOptions(merge: true)).then((res) {
-      isLoading.value = false;
-      // showMessage(dataUpdatedSuccessfully.tr);
-    });
   }
 
   Future<void> addStreamingAudience() async {
     streamingAudienceList.add(LiveAudienceModel(remoteUid.value.toString()));
-    await FirebaseFirestore.instance
-        .collection('live_audience')
-        .doc(userID.value)
-        .set({
-      "requests": streamingAudienceList.value.map((e) => e.toMap()).toList(),
-    }, SetOptions(merge: true)).then((res) {
-      isLoading.value = false;
-      streamingAudienceList.refresh();
-      showMessage(dataUpdatedSuccessfully.tr);
-    });
   }
 
   // fetchAudienceData(String userID) async {
@@ -943,63 +850,9 @@ class LiveController extends GetxController {
     isLoading.value = true;
     fetchFollowingRequests(userID);
     // fetchFollowers(userID);
-    await FirebaseFirestore.instance
-        .collection("users")
-        .doc(userID)
-        .get()
-        .then((value) {
-      var videoList = <Videos>[];
-      if (value.data() != null && value.data()!['videos'] != null) {
-        if (value.data()!['videos'] != null && value.data()!['videos'] != []) {
-          for (int j = 0; j < value.data()!['videos'].length; j++) {
-            videoList.add(Videos(value.data()!['videos'][j]['video']));
-          }
-        }
-      }
-      userData.value.id = value.data() != null ? value.data()!['userId'] : "";
-      userData.value.userId =
-          value.data() != null ? value.data()!['userId'] : "";
-      userData.value.username =
-          value.data() != null ? value.data()!['username'] : "";
-      userData.value.password =
-          value.data() != null ? value.data()!['password'] : "";
-      userData.value.phoneNumber =
-          value.data() != null ? value.data()!['phoneNumber'] : "";
-      userData.value.profileImage =
-          value.data() != null ? value.data()!['profileImage'] : "";
-      userData.value.age = value.data() != null ? value.data()!['age'] : "";
-      userData.value.state = value.data() != null ? value.data()!['state'] : "";
-      userData.value.nationality =
-          value.data() != null ? value.data()!['nationality'] : "";
-      userData.value.web = value.data() != null ? value.data()!['web'] : "";
-      userData.value.email = value.data() != null ? value.data()!['email'] : "";
-      userData.value.store = value.data() != null ? value.data()!['store'] : "";
-      userData.value.videos = videoList;
-      userData.refresh();
-      isLoading.value = false;
-    });
   }
 
   fetchFollowingRequests(String userID) async {
-    await FirebaseFirestore.instance
-        .collection("follow_request")
-        .doc(userID)
-        .get()
-        .then((value) {
-      if (value.data() != null && value.data()!['requests'] != null) {
-        if (value.data()!['requests'] != null &&
-            value.data()!['requests'] != []) {
-          for (int j = 0; j < value.data()!['requests'].length; j++) {
-            followRequests.add(Followers(
-                value.data()!['requests'][j]['userId'],
-                value.data()!['requests'][j]['username'],
-                value.data()!['requests'][j]['userImage'],
-                value.data()!['requests'][j]['userCountry']));
-          }
-        }
-      }
-      followRequests.refresh();
-    });
   }
 
 
@@ -1043,69 +896,18 @@ class LiveController extends GetxController {
 
   removeUserFromLive(int uid) async {
     print("this is uid $uid");
-    List<Map<String, dynamic>> acceptedUsers = await fetchAcceptedRequests(streamingUserId.value.isNotEmpty?streamingUserId.value:userID.value);
-    acceptedUsers.removeWhere((map) => map['uid'] == uid);
-
-    await FirebaseFirestore.instance
-        .collection('accepted_live_request')
-        .doc(streamingUserId.value.isNotEmpty?streamingUserId.value:userID.value)
-        .set({
-      "requests": acceptedUsers,
-    }, SetOptions(merge: true));
   }
 
   updateUID(int uid) async {
 
-    List<Map<String, dynamic>> acceptedUsers = await fetchAcceptedRequests(streamingUserId.value.isNotEmpty?streamingUserId.value:userID.value);
-    for (var map in acceptedUsers) {
-      if (map['senderId'] == userID.value) {
-        map['uid'] = uid;
-        break;
-      }
-    }
-
-    await FirebaseFirestore.instance
-        .collection('accepted_live_request')
-        .doc(streamingUserId.value.isNotEmpty?streamingUserId.value:userID.value)
-        .set({
-      "requests": acceptedUsers,
-    }, SetOptions(merge: true));
-
   }
   updateMuteStatusSenderId(bool isMute) async {
 
-    List<Map<String, dynamic>> acceptedUsers = await fetchAcceptedRequests(streamingUserId.value.isNotEmpty?streamingUserId.value:userID.value);
-    for (var map in acceptedUsers) {
-      if (map['senderId'] == userID.value) {
-        map['mute'] = isMute;
-        break;
-      }
-    }
 
-    await FirebaseFirestore.instance
-        .collection('accepted_live_request')
-        .doc(streamingUserId.value.isNotEmpty?streamingUserId.value:userID.value)
-        .set({
-      "requests": acceptedUsers,
-    }, SetOptions(merge: true));
 
   }
   updateMuteStatusUID(int uid,bool isMute) async {
 
-    List<Map<String, dynamic>> acceptedUsers = await fetchAcceptedRequests(streamingUserId.value.isNotEmpty?streamingUserId.value:userID.value);
-    for (var map in acceptedUsers) {
-      if (map['uid'] == uid) {
-        map['mute'] = isMute;
-        break;
-      }
-    }
-
-    await FirebaseFirestore.instance
-        .collection('accepted_live_request')
-        .doc(streamingUserId.value.isNotEmpty?streamingUserId.value:userID.value)
-        .set({
-      "requests": acceptedUsers,
-    }, SetOptions(merge: true));
 
   }
 
@@ -1182,66 +984,6 @@ class LiveController extends GetxController {
 
     List<Followers> followers = [];
 
-    FirebaseFirestore.instance
-        .collection("users")
-        .doc(userID.value)
-        .get()
-        .then((value) async {
-      followerUserid = value.data() != null ? value.data()!['userId'] : "";
-      followerUsername = value.data() != null ? value.data()!['username'] : "";
-      followerUserImage =
-          value.data() != null && value.data()!['profileImage'] != null
-              ? value.data()!['profileImage']
-              : "";
-      followerUserCountry =
-          value.data() != null && value.data()!['nationality'] != null
-              ? value.data()!['nationality']
-              : "";
-
-      DocumentSnapshot<Map<String, dynamic>> documentSnapshot =
-          await FirebaseFirestore.instance
-              .collection('followers')
-              .doc(streamingUserId.value.isNotEmpty?streamingUserId.value:userID.value)
-              .get();
-
-      if (documentSnapshot.exists &&
-          documentSnapshot.data() != null &&
-          documentSnapshot.data()!['requests'] != null) {
-        List<dynamic> list = documentSnapshot.data()!['requests'];
-        followers = list.map((e) => Followers.fromJson(e)).toList();
-      } else {
-        followers = [];
-      }
-
-      followers.add(Followers(followerUserid, followerUsername,
-          followerUserImage, followerUserCountry));
-
-      FirebaseFirestore.instance
-          .collection('followers')
-          .doc(streamingUserId.value.isNotEmpty?streamingUserId.value:userID.value)
-          .set({
-        "requests": followers.map((e) => e.toMap()).toList(),
-      }, SetOptions(merge: true)).then((res) {
-        showMessage(dataUpdatedSuccessfully.tr);
-      });
-      // FirebaseFirestore.instance
-      //     .collection('follow_request')
-      //     .doc(streamingUserId.value)
-      //     .set({
-      //   "requests": followRequests.value.map((e) => e.toMap()).toList(),
-      // }, SetOptions(merge: true)).then((res) {
-      //   isLoading.value = false;
-      //   // followText.value = following.tr;
-      //   FirebaseFirestore.instance
-      //       .collection('followers')
-      //       .doc(streamingUserId.value)
-      //       .set({
-      //     "requests": followRequests.value.map((e) => e.toMap()).toList(),
-      //   }, SetOptions(merge: true)).then((res) {
-      //     showMessage(dataUpdatedSuccessfully.tr);
-      //   });
-      // });
-    });
   }
 
   unfollowButtonClick(
@@ -1254,48 +996,6 @@ class LiveController extends GetxController {
 
     List<Followers> followers = [];
 
-    FirebaseFirestore.instance
-        .collection("users")
-        .doc(userID.value)
-        .get()
-        .then((value) async {
-      followerUserid = value.data() != null ? value.data()!['userId'] : "";
-      followerUsername = value.data() != null ? value.data()!['username'] : "";
-      followerUserImage =
-          value.data() != null && value.data()!['profileImage'] != null
-              ? value.data()!['profileImage']
-              : "";
-      followerUserCountry =
-          value.data() != null && value.data()!['nationality'] != null
-              ? value.data()!['nationality']
-              : "";
-
-      DocumentSnapshot<Map<String, dynamic>> documentSnapshot =
-          await FirebaseFirestore.instance
-              .collection('followers')
-              .doc(streamingUserId.value.isNotEmpty?streamingUserId.value:userID.value)
-              .get();
-
-      if (documentSnapshot.exists &&
-          documentSnapshot.data() != null &&
-          documentSnapshot.data()!['requests'] != null) {
-        List<dynamic> list = documentSnapshot.data()!['requests'];
-        followers = list.map((e) => Followers.fromJson(e)).toList();
-      } else {
-        followers = [];
-      }
-
-      followers.removeWhere((element) => element.userId == followerUserid);
-
-      FirebaseFirestore.instance
-          .collection('followers')
-          .doc(streamingUserId.value.isNotEmpty?streamingUserId.value:userID.value)
-          .set({
-        "requests": followers.map((e) => e.toMap()).toList(),
-      }, SetOptions(merge: true)).then((res) {
-        showMessage(dataUpdatedSuccessfully.tr);
-      });
-    });
   }
 
   // checkIfUserExistsInRequests() {
@@ -1333,17 +1033,6 @@ class LiveController extends GetxController {
       challengePrice: challengePrice
     ));
 
-    FirebaseFirestore.instance
-        .collection('live_streaming_requests')
-        .doc(streamingUserId.value.isNotEmpty?streamingUserId.value:userID.value)
-        .set({
-      "requests": streamingRequestsList.map((e) => e.toMap()).toList(),
-    }, SetOptions(merge: true)).then((res) {
-      isLoading.value = false;
-      showMessage(requestSent.tr);
-      fetchStreamingRequests(
-          isHost.value == false ? streamingUserId.value : userID.value);
-    });
     //});
   }
 

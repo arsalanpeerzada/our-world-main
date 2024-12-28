@@ -1,122 +1,74 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/foundation.dart';
+
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:ourworldmain/common/widgets.dart';
-import 'package:ourworldmain/constants/string_constants.dart';
-import 'package:ourworldmain/main_screen/ui/main_screen.dart';
-
-import '../constants/storage_constants.dart';
-import '../notifications.dart';
+import 'package:http/http.dart' as http;
+import 'package:ourworldmain/constants/RemoteUtils.dart';
 
 class RegisterController extends GetxController {
   final nameController = TextEditingController().obs;
   final phoneController = TextEditingController().obs;
-  final otpController = TextEditingController().obs;
   final passwordController = TextEditingController().obs;
-  FirebaseAuth firebaseAuth = FirebaseAuth.instance;
   var isLoading = false.obs;
-  var isOtpSent = false.obs;
-  var otpVerificationId = "".obs;
   var storage = GetStorage();
 
   @override
   Future<void> onInit() async {
-    await Firebase.initializeApp;
     super.onInit();
   }
 
-  otpVerfication() async {
-    isLoading.value = true;
-    await FirebaseAuth.instance
-        .signInWithCredential(PhoneAuthProvider.credential(
-      verificationId: otpVerificationId.value,
-      smsCode: otpController.value.text,
-    ))
-        .then((result) async {
-      String? notificationsTokenn = await FirebaseMessaging.instance.getToken();
-      await storage.write(notificationsToken, notificationsToken);
-      FirebaseFirestore.instance.collection('users').doc(result.user!.uid).set({
-        "name": nameController.value.text,
-        "phoneNumber": phoneController.value.text,
-        "password": passwordController.value.text,
-        'notificationsToken': notificationsTokenn
-      }).then((res) async {
-        isLoading.value = false;
-        await storage.write(userId, result.user!.uid);
-        await storage.write(userName, nameController.value.text);
-        await storage.write(userCountry, "");
-        await storage.write(userImage, "");
-
-        showMessage(
-            "${registerSuccessfully.tr} \nHello ${nameController.value.text}");
-        // if (!kIsWeb) {
-        //   NotificationPlugin firebaseMessaging = NotificationPlugin();
-        //   await firebaseMessaging.init();
-        //   firebaseMessaging.selectNotificationStream.stream.listen((String payload) async {
-        //     // await Navigator.pushNamed(Get.context!, '/secondPage');
-        //   });
-        // }
-        nameController.value.text = "";
-        phoneController.value.text = "";
-        passwordController.value.text = "";
-        isOtpSent.value = false;
-        Get.to(() => MainScreen());
-      });
-    }).catchError((err) {
-      isLoading.value = false;
-      showMessage("Register error ${err.message}");
-      showDebugPrint("Register error -->  ${err.message}");
-    });
-    ;
-  }
-
-  Future<void> registerToFirebase() async {
+  Future<void> register() async {
     if (nameController.value.text.isEmpty) {
-      showMessage(enterYourName.tr);
+      showMessage("Please enter your name");
     } else if (phoneController.value.text.isEmpty) {
-      showMessage(enterYourPhoneNumber.tr);
-    } else if (!phoneController.value.text.contains("+")) {
-      showMessage(enterYourCountryCodeBeforePhoneNumber.tr);
+      showMessage("Please enter your phone number");
     } else if (passwordController.value.text.isEmpty) {
-      showMessage(enterYourPassword.tr);
+      showMessage("Please enter your password");
     } else {
       isLoading.value = true;
-      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-          .collection('users')
-          .where('phoneNumber', isEqualTo: phoneController.value.text)
-          .get();
 
-      if (querySnapshot.docs.isNotEmpty) {
-        showMessage(userExists.tr);
-        isLoading.value = false;
-      }
-      else {
-        await firebaseAuth.verifyPhoneNumber(
-          phoneNumber: phoneController.value.text,
-          codeSent: (String verificationId, int? resendToken) async {
-            isLoading.value = false;
-            isOtpSent.value = true;
-            otpVerificationId.value = verificationId;
-            showMessage("OTP code sent. Please enter code to register");
-          },
-          verificationCompleted: (PhoneAuthCredential phoneAuthCredential) {
-            showDebugPrint("Complete -> ${phoneAuthCredential.verificationId}");
-          },
-          verificationFailed: (FirebaseAuthException error) {
-            showDebugPrint("failed -> ${error}");
-            showMessage(error.message??"");
-            isLoading.value = false;
-          },
-          codeAutoRetrievalTimeout: (String verificationId) {
-            showDebugPrint("timeout -> ${verificationId}");
-          },
+      try {
+        var headers = {'Content-Type': 'application/json'};
+        var body = json.encode({
+          "userName": nameController.value.text,
+          "password": passwordController.value.text,
+          "firstName": nameController.value.text,
+          "lastName": nameController.value.text,
+          "email": nameController.value.text+"@gmail.com",
+          "phone": phoneController.value.text,
+        });
+
+        var response = await http.post(
+          Uri.parse(BaseURL.BASEURL+ApiEndPoints.SIGNUP),
+          headers: headers,
+          body: body,
         );
+
+        if (response.statusCode == 200) {
+          /*var responseData = json.decode(response.body);
+          print(responseData);*/
+          showMessage("Registration successful");
+        } else {
+          //print("Error: ${response.reasonPhrase}");
+          showMessage("Registration failed: UserName already exist");
+        }
+      } catch (e) {
+        print("Exception: $e");
+        showMessage("An error occurred. Please try again.");
+      } finally {
+        isLoading.value = false;
       }
     }
   }
+
+  void showMessage(String message) {
+    Get.snackbar(
+      "Alert",
+      message,
+      snackPosition: SnackPosition.BOTTOM,
+    );
+  }
 }
+

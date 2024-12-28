@@ -1,6 +1,5 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:dropdown_button2/dropdown_button2.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ourworldmain/about_us/view.dart';
@@ -81,28 +80,17 @@ class MainScreen extends StatelessWidget {
                 ),
               ),
             ),
-            FirebaseAuth.instance.currentUser != null
-                ? InkWell(
-                    onTap: () {
-//                      Navigator.pop(context);
-                      controller.showLogoutDialog(context);
-                    },
-                    child: const Icon(
-                      Icons.logout,
-                      color: colorRed,
-                    ),
-                  )
-                : InkWell(
-                    onTap: () {
-                      Get.to(() => LoginScreen());
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.only(
-                          left: 12.0, top: 12.0, bottom: 12.0),
-                      child: headingText(enter,
-                          SizeConfig.blockSizeHorizontal * 5.2, colorBlack),
-                    ),
-                  )
+            InkWell(
+              onTap: () {
+                Get.to(() => LoginScreen());
+              },
+              child: Padding(
+                padding: const EdgeInsets.only(
+                    left: 12.0, top: 12.0, bottom: 12.0),
+                child: headingText(enter,
+                    SizeConfig.blockSizeHorizontal * 5.2, colorBlack),
+              ),
+            )
           ],
         ),
       ),
@@ -185,21 +173,6 @@ class MainScreen extends StatelessWidget {
                         builder: (context) => const JoinUsScreen()));
               },
             ),
-            FirebaseAuth.instance.currentUser != null
-                ? ListTile(
-                    leading: const Icon(
-                      Icons.logout,
-                      color: colorRed,
-                    ),
-                    title: headingText(
-                        logout.tr, SizeConfig.blockSizeHorizontal * 4, appColor,
-                        weight: FontWeight.w400),
-                    onTap: () {
-//                      Navigator.pop(context);
-                      controller.showLogoutDialog(context);
-                    },
-                  )
-                : Container(),
           ],
         ),
       ),
@@ -211,7 +184,7 @@ class MainScreen extends StatelessWidget {
             ),
             SizedBox(
               height: SizeConfig.blockSizeVertical * 15,
-              child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+              /*child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
                 // inside the <> you enter the type of your stream
                 stream: FirebaseFirestore.instance
                     .collection("live_streaming")
@@ -282,11 +255,11 @@ class MainScreen extends StatelessWidget {
                           ],
                         );
 
-                        /* ListTile(
+                        *//* ListTile(
                           title: Text(
                             snapshot.data!.docs[index].get('user_id'),
                           ),
-                        );*/
+                        );*//*
                       },
                     );
                   }
@@ -296,7 +269,7 @@ class MainScreen extends StatelessWidget {
                     return Container();
                   }
                 },
-              ),
+              ),*/
 
               /*ListView.builder(
                 itemCount: 10,
@@ -306,6 +279,14 @@ class MainScreen extends StatelessWidget {
                   return storyRowItem(index);
                 },
               ),*/
+              child: ListView.builder(
+                itemCount: 10,
+                scrollDirection: Axis.horizontal,
+                shrinkWrap: true,
+                itemBuilder: (context, index) {
+                  return storyRowItem(index);
+                },
+              ),
             ),
             Container(
               decoration: const BoxDecoration(
