@@ -1,7 +1,7 @@
 
 
 const String userId = "userId";
-const String userName = "userName";
+const String userName = "username";
 const String userCountry = "userCountry";
 const String userImage = "userImage";
 const String profileData = "profileData";

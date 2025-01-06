@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
@@ -6,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:ourworldmain/constants/RemoteUtils.dart';
 import 'package:ourworldmain/constants/string_constants.dart';
 import 'package:ourworldmain/main_screen/ui/main_screen.dart';
 import 'package:share_plus/share_plus.dart';
@@ -17,6 +19,7 @@ import '../../constants/storage_constants.dart';
 import '../../live_screen/ui/live_screen.dart';
 import '../../login/login_screen.dart';
 import '../../post/model/post_model.dart';
+import 'package:http/http.dart' as http;
 
 class MainScreenController extends GetxController {
   var postList = <PostModel>[].obs;
@@ -26,6 +29,7 @@ class MainScreenController extends GetxController {
   var username = "".obs;
   var selectedCountry = 0.obs;
   var selectedCategory = 0.obs;
+  var applicationUser = "";
 
   Timer? _timerForInter;
   BannerAd? _bannerAd;
@@ -53,6 +57,9 @@ class MainScreenController extends GetxController {
         _interstitialAd!.show();
       }
     });
+
+   /* var data = store.read(userName);
+    applicationUser = data;*/
 
   }
 
@@ -83,13 +90,66 @@ class MainScreenController extends GetxController {
   }
 
   getHiddenPosts() async {
-    sharedPreferences = await SharedPreferences.getInstance();
+    try {
+      String? token = store.read('token');
+      int? userId = store.read('userId');
 
-    if (sharedPreferences!.getStringList('hiddenPosts') != null) {
-      hiddenPosts.value = sharedPreferences!.getStringList('hiddenPosts')!;
-      hiddenPosts.refresh();
+      // Check if the user is logged in
+      if (userId == 0 || userId == null) {
+        showLoginDialog();
+      } else {
+        var headers = {
+          'Content-Type': 'application/json',
+          'Authorization': "Bearer $token",
+        };
+
+        var request = http.Request(
+            'GET',
+            Uri.parse(BaseURL.BASEURL + ApiEndPoints.GETPOST + "?userId=" + userId.toString())
+        );
+
+        request.headers.addAll(headers);
+
+        // Send the request
+        http.StreamedResponse response = await request.send();
+
+        if (response.statusCode == 200) {
+          // Successfully received the response
+          String responseBody = await response.stream.bytesToString();
+          print('Response Body: $responseBody');
+
+          // Parse the response JSON
+          Map<String, dynamic> responseJson = json.decode(responseBody);
+
+          if (responseJson['status'] == 'success' && responseJson['data'] != null) {
+            // Clear old data
+            hiddenPosts.clear();
+            postList.clear();
+            duplicatePostList.clear();
+
+            // Loop through each post in the response data
+            List<dynamic> postsData = responseJson['data'];
+            for (var post in postsData) {
+              // Create PostModel object for each post and add it to the list
+              PostModel postModel = PostModel.fromJson(post); // Add to hiddenPostList
+              postModel.text = post["postText"];
+              postModel.username = post['user']['userName'].toString();
+              postModel.country = post['countryId'];
+              postModel.category = post['categoryId'];
+
+              // Optionally, add to postList and duplicatePostList if needed
+              postList.add(postModel);
+              duplicatePostList.add(postModel);
+            }
+          }
+        } else {
+          print('Failed to load hidden posts. Status Code: ${response.statusCode}');
+        }
+      }
+    } catch (e) {
+      // Handle error if the API call fails
+      print("Error fetching hidden posts: $e");
     }
-    print('~~!!!!~~~~~~${hiddenPosts.toSet()}');
   }
 
   loadBannerAd() {
@@ -260,12 +320,6 @@ class MainScreenController extends GetxController {
     // }
   }
 
-
-
-
-
-
-
   filterButtonTap() async {
     postList.clear();
     duplicatePostList.clear();
@@ -395,7 +449,7 @@ class MainScreenController extends GetxController {
                             store.erase();
                             username.value = "";
                            // await FirebaseAuth.instance.signOut();
-                            Get.offAll(() => MainScreen());
+                            Get.offAll(() => LoginScreen());
                             Get.back();
                           },
                           child: Container(
@@ -420,5 +474,11 @@ class MainScreenController extends GetxController {
                 ])),
       ),
     );
+  }
+
+  void mygetUserData(BuildContext context) {
+    String? uid = store.read(userName) ?? "";
+    print(uid);
+    applicationUser = uid;
   }
 }

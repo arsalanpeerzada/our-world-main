@@ -3,6 +3,9 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:ourworldmain/constants/RemoteUtils.dart';
+import 'package:ourworldmain/main_screen/ui/main_screen.dart';
 import 'package:ourworldmain/register/register_screen.dart';
 import '../common/size_config.dart';
 import '../common/widgets.dart';
@@ -24,31 +27,49 @@ class LoginScreen extends StatelessWidget {
     // Placeholder for login logic
     var headers = {
       'Content-Type': 'application/json',
-      'Cookie': 'JSESSIONID=B440A76F435E86CC709C9EDBE8B70EA6'
     };
-    var request = http.Request('POST', Uri.parse('http://44.219.174.122:8080/api/auth/login'));
+    var request = http.Request('POST', Uri.parse(BaseURL.BASEURL + ApiEndPoints.LOGIN));
     request.body = json.encode({
-      "username": "Arsalan",
-      "password": "123456789"
+      "username": nameController.text,
+      "password": passwordController.text
     });
     request.headers.addAll(headers);
 
-    http.StreamedResponse response = await request.send();
+    try {
+      http.StreamedResponse response = await request.send();
 
-    if (response.statusCode == 200) {
-      Get.snackbar(
-          "Alert",
-          "Login Successful",
-          snackPosition: SnackPosition.BOTTOM);
-    }
-    else {
-      Get.snackbar(
-          "Success!!",
-          "Username or Password is incorrect",
-          snackPosition: SnackPosition.BOTTOM);
-    }
+      if (response.statusCode == 200) {
+        // Parse the response body
+        String responseBody = await response.stream.bytesToString();
+        Map<String, dynamic> jsonResponse = json.decode(responseBody);
 
+        // Extract token and user data
+        String token = jsonResponse['data']['token'];
+        int userId = jsonResponse['data']['user']['userId'];
+        String username = jsonResponse['data']['user']['username'];
+        List<dynamic> roles = jsonResponse['data']['user']['roles'];
+
+        // Save the data and cookies to GetStorage
+        final storage = GetStorage();
+        storage.write('token', token);
+        storage.write('userId', userId);
+        storage.write('username', username);
+        storage.write('roles', roles);
+
+
+        // Display success message
+        Get.snackbar("Alert", "Login Successful", snackPosition: SnackPosition.BOTTOM);
+        Get.to(() => MainScreen());
+      } else {
+        // Handle error response
+        Get.snackbar("Error", "Username or Password is incorrect", snackPosition: SnackPosition.BOTTOM);
+      }
+    } catch (e) {
+      // Handle exceptions
+      Get.snackbar("Error", "An error occurred: $e", snackPosition: SnackPosition.BOTTOM);
+    }
   }
+
 
   @override
   Widget build(BuildContext context) {

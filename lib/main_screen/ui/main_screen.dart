@@ -26,6 +26,31 @@ class MainScreen extends StatelessWidget {
     controller.fetchPosts();
   }
 
+
+  final List<Map<String, dynamic>> hardcodedData = [
+    {
+      'user_id': '1',
+      'streaming_token': 'token_123',
+      'streaming_channel': 'channel_1',
+      'user_name': 'John Doe',
+      'user_image':'', // Replace with actual image URL or leave it empty
+    },
+    {
+      'user_id': '2',
+      'streaming_token': 'token_456',
+      'streaming_channel': 'channel_2',
+      'user_name': 'Jane Smith',
+      'user_image': '',
+    },
+    {
+      'user_id': '3',
+      'streaming_token': 'token_789',
+      'streaming_channel': 'channel_3',
+      'user_name': 'Bob Johnson',
+      'user_image': '',
+    },
+  ];
+
   @override
   Widget build(BuildContext context) {
     final GlobalKey<ScaffoldState> key = GlobalKey();
@@ -41,7 +66,9 @@ class MainScreen extends StatelessWidget {
           children: [
             InkWell(
               onTap: () {
+                controller.mygetUserData(context);
                 key.currentState!.openDrawer();
+
               },
               child: Padding(
                 padding:
@@ -102,15 +129,24 @@ class MainScreen extends StatelessWidget {
               decoration: const BoxDecoration(
                 color: colorScreenBg,
               ),
-              child: Center(
-                child: Obx(
-                  () => headingText(
-                    controller.username.value,
-                    SizeConfig.blockSizeHorizontal * 4,
-                    appColor,
-                    weight: FontWeight.w400,
-                  ),
-                ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // Profile Picture
+                  CircleAvatar(
+                      radius: 40, // Adjust the size of the profile picture
+                          backgroundImage: NetworkImage('https://i.pravatar.cc/150?img=3'), // Default profile picture URL // Assuming profile picture URL is available in controller
+                      backgroundColor: Colors.grey.shade200, // Placeholder color
+                    ),
+                  const SizedBox(height: 10),
+                  // Name Label
+                  headingText(
+                      controller.applicationUser,
+                      SizeConfig.blockSizeHorizontal * 4,
+                      appColor,
+                      weight: FontWeight.w600,
+                    ),
+                ],
               ),
             ),
             ListTile(
@@ -173,9 +209,22 @@ class MainScreen extends StatelessWidget {
                         builder: (context) => const JoinUsScreen()));
               },
             ),
+            ListTile(
+              leading: const Icon(
+                Icons.logout,
+                color: colorRed,
+              ),
+              title: headingText(
+                  signOut.tr, SizeConfig.blockSizeHorizontal * 4, appColor,
+                  weight: FontWeight.w400),
+              onTap: () {
+                controller.showLogoutDialog(context);
+              },
+            ),
           ],
         ),
-      ),
+      )
+          ,
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -184,107 +233,59 @@ class MainScreen extends StatelessWidget {
             ),
             SizedBox(
               height: SizeConfig.blockSizeVertical * 15,
-              /*child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-                // inside the <> you enter the type of your stream
-                stream: FirebaseFirestore.instance
-                    .collection("live_streaming")
-                    .snapshots(),
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    return ListView.builder(
-                      itemCount: snapshot.data!.docs.length,
-                      scrollDirection: Axis.horizontal,
-                      itemBuilder: (context, index) {
-                        return Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Padding(
-                                padding: const EdgeInsets.all(5.0),
-                                child: InkWell(
-                                  onTap: () {
-                                    //Get.to(() => GuestScreen());
-
-                                    Get.to(() => LiveScreen(isHost: false,streamingUserIds:  snapshot.data!.docs[index].get('user_id'),
-                                        streamingToken: snapshot.data!.docs[index].get('streaming_token'),
-                                        streamingJoiningId: "0", groupStreaming: false, hostId: "0",channelName:  snapshot.data!.docs[index]
-                                            .get('streaming_channel')));
-
-                                  },
-                                  child: Container(
-                                    decoration: const BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: Colors.white,
-                                      boxShadow: [
-                                        BoxShadow(
-                                            color: Colors.red, spreadRadius: 2),
-                                      ],
-                                    ),
-                                    clipBehavior: Clip.antiAlias,
-                                    width: SizeConfig.blockSizeVertical * 10,
-                                    height: SizeConfig.blockSizeVertical * 10,
-                                    child: snapshot.data!.docs[index]
-                                                    .get('user_image') !=
-                                                null &&
-                                            snapshot.data!.docs[index]
-                                                    .get('user_image') !=
-                                                '' &&
-                                            snapshot.data!.docs[index]
-                                                    .get('user_image') !=
-                                                'null'
-                                        ? Image.network(
-                                            snapshot.data!.docs[index]
-                                                    .get('user_image') ??
-                                                "",
-                                            fit: BoxFit.cover,
-                                          )
-                                        : Image.asset(
-                                            'assets/images/profile3d.png'),
-                                  ),
-                                )),
-                            headingText(
-                                snapshot.data!.docs[index].get('user_name') !=
-                                            null &&
-                                        snapshot.data!.docs[index]
-                                                .get('user_name') !=
-                                            ""
-                                    ? snapshot.data!.docs[index]
-                                        .get('user_name')
-                                    : "user",
-                                SizeConfig.blockSizeHorizontal * 3.2,
-                                colorBlack)
-                          ],
-                        );
-
-                        *//* ListTile(
-                          title: Text(
-                            snapshot.data!.docs[index].get('user_id'),
-                          ),
-                        );*//*
-                      },
-                    );
-                  }
-                  if (snapshot.hasError) {
-                    return const Text('Error');
-                  } else {
-                    return Container();
-                  }
-                },
-              ),*/
-
-              /*ListView.builder(
-                itemCount: 10,
-                scrollDirection: Axis.horizontal,
-                shrinkWrap: true,
-                itemBuilder: (context, index) {
-                  return storyRowItem(index);
-                },
-              ),*/
               child: ListView.builder(
-                itemCount: 10,
+                itemCount: hardcodedData.length,
                 scrollDirection: Axis.horizontal,
-                shrinkWrap: true,
                 itemBuilder: (context, index) {
-                  return storyRowItem(index);
+                  final userData = hardcodedData[index];
+                  return Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(5.0),
+                        child: InkWell(
+                          onTap: () {
+                            Get.to(() => LiveScreen(
+                              isHost: false,
+                              streamingUserIds: userData['user_id'],
+                              streamingToken: userData['streaming_token'],
+                              streamingJoiningId: "0",
+                              groupStreaming: false,
+                              hostId: "0",
+                              channelName: userData['streaming_channel'],
+                            ));
+                          },
+                          child: Container(
+                            decoration: const BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.white,
+                              boxShadow: [
+                                BoxShadow(color: Colors.red, spreadRadius: 2),
+                              ],
+                            ),
+                            clipBehavior: Clip.antiAlias,
+                            width: SizeConfig.blockSizeVertical * 10,
+                            height: SizeConfig.blockSizeVertical * 10,
+                            child: userData['user_image'] != null &&
+                                userData['user_image'] != '' &&
+                                userData['user_image'] != 'null'
+                                ? Image.network(
+                              userData['user_image'],
+                              fit: BoxFit.cover,
+                            )
+                                : Image.asset('assets/images/profile3d.png'),
+                          ),
+                        ),
+                      ),
+                      headingText(
+                        userData['user_name'] != null && userData['user_name'] != ""
+                            ? userData['user_name']
+                            : "user",
+                        SizeConfig.blockSizeHorizontal * 3.2,
+                        Colors.black,
+                      ),
+                    ],
+                  );
                 },
               ),
             ),

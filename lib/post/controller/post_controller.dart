@@ -8,6 +8,7 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:ourworldmain/common/widgets.dart';
+import 'package:ourworldmain/constants/RemoteUtils.dart';
 import 'package:ourworldmain/constants/storage_constants.dart';
 import 'package:ourworldmain/constants/string_constants.dart';
 import 'package:ourworldmain/login/login_screen.dart';
@@ -51,28 +52,6 @@ class PostController extends GetxController {
     }
   }
 
-  // Future<void> _removeImage(String imageUrl) async {
-  //   try {
-  //     // Remove image from Firestore
-  //     final firestore = FirebaseFirestore.instance;
-  //     final postRef = firestore.collection('posts').doc(postId);
-  //
-  //     // Update Firestore document to remove image URL
-  //     await postRef.update({
-  //       'images': FieldValue.arrayRemove([imageUrl])
-  //     });
-  //
-  //     // Optionally, delete the image from Firebase Storage
-  //     final storageRef = FirebaseStorage.instance.refFromURL(imageUrl);
-  //     await storageRef.delete();
-  //
-  //
-  //   } catch (e) {
-  //     print('Error removing image: $e');
-  //   }
-  // }
-
-
   Future<void> addPostButtonClick() async {
     if (selectedCountry.value == 0) {
       showMessage(chooseCountry.tr);
@@ -82,14 +61,14 @@ class PostController extends GetxController {
         imageFileList.value.isEmpty) {
       showMessage(cantShareEmptyPost.tr);
     } else {
-      if (store.read(userName) == "" || store.read(userName) == null) {
-        //  showMessage(pleaseLoginFirstToShareAPost.tr);
+      if (store.read(userId) == "" || store.read(userId) == null) {
+        showMessage(pleaseLoginFirstToShareAPost.tr);
         showLoginDialog();
       } else {
         isLoading.value = true;
+        uploadPost();
+/*        if (imageUrlList.value.isNotEmpty) {
 
-        if (imageUrlList.value.isNotEmpty) {
-          uploadPost();
         } else {
           // uploading images on firebase store
           for (int i = 0; i < imageFileList.length; i++) {
@@ -104,37 +83,85 @@ class PostController extends GetxController {
             }
           }
           uploadingConditionCheck();
-        }
+        }*/
       }
     }
   }
 
-  Future<List<String>> getAllTokens() async {
-    List<String> tokens = [];
-
-    try {
-
-    } catch (e) {
-      print('Error getting tokens: $e');
-    }
-
-    return tokens;
-  }
 
   Future<void> uploadPost() async {
-    var map = {
-      'userId': store.read(userId),
-      'username': store.read(userName),
-      'country': selectedCountry.value,
-      'category': selectedCategory.value,
-      'text': textController.value.text.trim(),
-      'timestamp': (DateTime.now().toUtc().millisecondsSinceEpoch).toString(),
-      'images': imageUrlList,
-      'comments': commentList
-    };
-    showDebugPrint("userid ------------->  ${store.read(userId)}");
+    try {
+      // Retrieve token and userId from GetStorage
+      String? token = store.read('token');
+      int? userId = store.read('userId');
 
+      if (token == null || userId == null) {
+        Get.snackbar('Error', 'User is not authenticated.', snackPosition: SnackPosition.BOTTOM);
+        isLoading.value = false; // Close the loader
+        return;
+      }
+
+      // Construct the request headers with authorization token
+      var headers = {
+        'Content-Type': 'application/json',
+        'Authorization': "Bearer $token",
+      };
+
+      // Construct the request body (Map) with named parameters for clarity
+      var requestBody = {
+        'userId': userId,
+        'categoryId': selectedCountry.value, // Assuming this is an integer or string
+        'countryId': selectedCategory.value, // Assuming this is an integer or string
+        'postText': textController.value.text.trim(),
+        'images': null, // Assuming this is a List of image URLs
+      };
+
+      // Initialize the HTTP request
+      var request = http.Request('POST', Uri.parse(BaseURL.BASEURL + ApiEndPoints.CREATEPOST));
+      request.body = json.encode(requestBody); // Add the body to the request
+      request.headers.addAll(headers); // Add headers
+
+      // Send the request
+      http.StreamedResponse response = await request.send();
+
+      if (response.statusCode == 200) {
+        // Successfully received the response
+        String responseBody = await response.stream.bytesToString();
+        print('Response Body: $responseBody');
+
+        // Optionally, parse the response JSON if you need
+        Map<String, dynamic> responseJson = json.decode(responseBody);
+        if (responseJson['status'] == 'success') {
+          Get.snackbar('Success', 'Post created successfully', snackPosition: SnackPosition.BOTTOM);
+          isLoading.value = false;
+          // Reset page data
+          textController.value.clear();
+          imageFileList.clear();
+          selectedCountry.value = 0;
+          selectedCategory.value = 0;
+
+          // Navigate to the MainScreen
+          Get.off(() => MainScreen());
+        } else {
+          Get.snackbar('Error', 'Failed to create post: ${responseJson['message']}', snackPosition: SnackPosition.BOTTOM);
+        }
+      } else {
+        // Handle failed request (non-200 status code)
+        print('Request failed with status: ${response.statusCode}');
+        print('Reason: ${response.reasonPhrase}');
+        Get.snackbar('Error', 'Failed to create post. Please try again.', snackPosition: SnackPosition.BOTTOM);
+      }
+    } catch (e) {
+      // Handle errors that may occur during the request or data processing
+      print('Error: $e');
+      Get.snackbar('Error', 'An error occurred while creating the post.', snackPosition: SnackPosition.BOTTOM);
+    } finally {
+      // Close the loader in all cases
+      isLoading.value = false;
+    }
   }
+
+
 
   void uploadingConditionCheck() {
     Future.delayed(const Duration(seconds: 5), () {

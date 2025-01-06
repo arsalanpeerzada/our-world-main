@@ -20,12 +20,13 @@ class PostModel {
     timestamp = json['timestamp'].toString();
     country = json['country'];
     category = json['category'];
-    if (json['images'] != null) {
-      images = <Images>[];
-      json['images'].forEach((v) {
-        images!.add(Images.fromJson(v));
-      });
-    }
+    images = [];
+    // if (json['images'] != null) {
+    //   images = <Images>[];
+    //   json['images'].forEach((v) {
+    //     images!.add(Images.fromJson(v));
+    //   });
+    // }
     if (json['comments'] != null) {
       comments = <Comments>[];
       json['comments'].forEach((v) {
