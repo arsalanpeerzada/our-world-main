@@ -21,15 +21,20 @@ import '../../login/login_screen.dart';
 import '../../post/model/post_model.dart';
 import 'package:http/http.dart' as http;
 
+import '../../profile/model/profile_model.dart';
+
 class MainScreenController extends GetxController {
   var postList = <PostModel>[].obs;
   var duplicatePostList = <PostModel>[].obs;
   final searchController = TextEditingController().obs;
+  var userData =
+      ProfileModel("", "", "", "", "", "", "", "", "", "", "", "", []).obs;
   var store = GetStorage();
   var username = "".obs;
   var selectedCountry = 0.obs;
   var selectedCategory = 0.obs;
   var applicationUser = "";
+  var isLoggedIn = false;
 
   Timer? _timerForInter;
   BannerAd? _bannerAd;
@@ -136,6 +141,8 @@ class MainScreenController extends GetxController {
               postModel.username = post['user']['userName'].toString();
               postModel.country = post['countryId'];
               postModel.category = post['categoryId'];
+              postModel.id = post['postId'].toString();
+              postModel.userId = post['user']['userId'].toString();
 
               // Optionally, add to postList and duplicatePostList if needed
               postList.add(postModel);
@@ -478,7 +485,11 @@ class MainScreenController extends GetxController {
 
   void mygetUserData(BuildContext context) {
     String? uid = store.read(userName) ?? "";
-    print(uid);
-    applicationUser = uid;
+    String token = store.read('token') ?? "";
+    if(uid != "") {
+      print(uid);
+      applicationUser = uid;
+      isLoggedIn = true;
+    }
   }
 }

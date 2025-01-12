@@ -9,6 +9,8 @@ import 'package:ourworldmain/live_screen/ui/live_screen.dart';
 import 'package:ourworldmain/main_screen/controller/main_screen_controller.dart';
 import 'package:ourworldmain/main_screen/ui/comment_screen.dart';
 import 'package:ourworldmain/post/model/post_model.dart';
+import 'package:ourworldmain/profile/ui/profile_screen.dart';
+import 'package:ourworldmain/profile_page/UserProfileScreen.dart';
 import 'package:ourworldmain/terms/view.dart';
 
 import '../../common/size_config.dart';
@@ -24,6 +26,7 @@ class MainScreen extends StatelessWidget {
 
   MainScreen({super.key}) {
     controller.fetchPosts();
+
   }
 
 
@@ -53,6 +56,7 @@ class MainScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    controller.mygetUserData(context);
     final GlobalKey<ScaffoldState> key = GlobalKey();
     return SafeArea(
         child: Scaffold(
@@ -68,7 +72,6 @@ class MainScreen extends StatelessWidget {
               onTap: () {
                 controller.mygetUserData(context);
                 key.currentState!.openDrawer();
-
               },
               child: Padding(
                 padding:
@@ -82,7 +85,6 @@ class MainScreen extends StatelessWidget {
             ),
             InkWell(
               onTap: () {
-                print('zzzzzz');
                 controller.getUserData(context);
               },
               child: Padding(
@@ -129,24 +131,33 @@ class MainScreen extends StatelessWidget {
               decoration: const BoxDecoration(
                 color: colorScreenBg,
               ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // Profile Picture
-                  CircleAvatar(
-                      radius: 40, // Adjust the size of the profile picture
-                          backgroundImage: NetworkImage('https://i.pravatar.cc/150?img=3'), // Default profile picture URL // Assuming profile picture URL is available in controller
-                      backgroundColor: Colors.grey.shade200, // Placeholder color
-                    ),
-                  const SizedBox(height: 10),
-                  // Name Label
-                  headingText(
-                      controller.applicationUser,
-                      SizeConfig.blockSizeHorizontal * 4,
-                      appColor,
-                      weight: FontWeight.w600,
-                    ),
-                ],
+              child: InkWell(
+                onTap: () {
+                  if (controller.isLoggedIn) {
+                    Get.to(() => UserProfileScreen());
+                  }else{
+                    Get.to(() => LoginScreen());
+                  }
+                },
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // Profile Picture
+                    CircleAvatar(
+                        radius: 40, // Adjust the size of the profile picture
+                            backgroundImage: NetworkImage('https://i.pravatar.cc/150?img=3'), // Default profile picture URL // Assuming profile picture URL is available in controller
+                        backgroundColor: Colors.grey.shade200, // Placeholder color
+                      ),
+                    const SizedBox(height: 10),
+                    // Name Label
+                    headingText(
+                        controller.isLoggedIn ? controller.applicationUser : "",
+                        SizeConfig.blockSizeHorizontal * 4,
+                        appColor,
+                        weight: FontWeight.w600,
+                      ),
+                  ],
+                ),
               ),
             ),
             ListTile(
@@ -209,18 +220,22 @@ class MainScreen extends StatelessWidget {
                         builder: (context) => const JoinUsScreen()));
               },
             ),
-            ListTile(
-              leading: const Icon(
-                Icons.logout,
-                color: colorRed,
+            if (controller.isLoggedIn) // Check if user is logged in
+              ListTile(
+                leading: const Icon(
+                  Icons.logout,
+                  color: colorRed,
+                ),
+                title: headingText(
+                  signOut.tr,
+                  SizeConfig.blockSizeHorizontal * 4,
+                  appColor,
+                  weight: FontWeight.w400,
+                ),
+                onTap: () {
+                  controller.showLogoutDialog(context);
+                },
               ),
-              title: headingText(
-                  signOut.tr, SizeConfig.blockSizeHorizontal * 4, appColor,
-                  weight: FontWeight.w400),
-              onTap: () {
-                controller.showLogoutDialog(context);
-              },
-            ),
           ],
         ),
       )
@@ -620,7 +635,8 @@ class MainScreen extends StatelessWidget {
                   : SizedBox(
                       height: 300,
                       child: Center(
-                        child: headingText(noDataFound.tr,
+                        child: headingText(
+                            controller.isLoggedIn ? noDataFound1.tr : noDataFound.tr,
                             SizeConfig.blockSizeHorizontal * 4, colorGrey,
                             weight: FontWeight.w500),
                       ),

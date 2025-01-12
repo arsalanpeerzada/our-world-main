@@ -41,6 +41,7 @@ const cantShareEmptyPost = "Can't Share Empty Post";
 const postShareSuccessfully = "Post Share Successfully";
 const postDeletedSuccessfully = "Post Deleted Successfully";
 const noDataFound = "No Data Found \n           or \n Login for data";
+const noDataFound1 = "No Data Found";
 const pleaseLoginFirstToShareAPost = "Please Login First To Share A Post";
 const pleaseLoginFirstToCommentAPost = "Please Login First To Comment A Post";
 const enterComment = "Enter Comment";

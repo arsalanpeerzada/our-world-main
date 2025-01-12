@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:ourworldmain/app_language/world_language.dart';
 import 'package:ourworldmain/constants/app_colors.dart';
@@ -14,7 +15,10 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 Future<void> main() async {
 
   WidgetsFlutterBinding.ensureInitialized();
+  await GetStorage.init();
   final rootScaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
+  var store = GetStorage();
+  String token = store.read('token') ?? "";
 
   runApp(
     //MainScreen()

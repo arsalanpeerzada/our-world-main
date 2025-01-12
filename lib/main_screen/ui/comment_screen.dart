@@ -18,7 +18,7 @@ class CommentScreen extends StatelessWidget {
   CommentScreen(String id,String user, {super.key}) {
     controller.commentId.value = id;
     userId = user;
-    controller.fetchComments();
+    controller.fetchComments(id, user);
   }
 
   @override
@@ -36,7 +36,8 @@ class CommentScreen extends StatelessWidget {
                     SizedBox(
                       height: SizeConfig.blockSizeVertical * 4,
                     ),
-                   Obx(() => controller.commentImagePath.value != "" ? SizedBox(
+                   Obx(() => controller.commentImagePath.value != "" ?
+                   SizedBox(
                               child: Padding(
                                 padding: const EdgeInsets.all(10.0),
                                 child: Image.file(
@@ -46,8 +47,8 @@ class CommentScreen extends StatelessWidget {
                                   fit: BoxFit.fill,
                                 ),
                               ),
-                            ):Container(),),
-
+                            ):Container(),
+                   ),
                     Container(
                       decoration: const BoxDecoration(
                           color: colorLightGreyBg,
@@ -69,7 +70,7 @@ class CommentScreen extends StatelessWidget {
                             hintStyle: const TextStyle(color: colorGrey),
                             filled: true,
                             border: InputBorder.none,
-                            prefixIcon: InkWell(
+                            /*prefixIcon: InkWell(
                               onTap: () {
                                 controller.openGallery();
                               },
@@ -86,7 +87,7 @@ class CommentScreen extends StatelessWidget {
                                   ),
                                 ),
                               ),
-                            ),
+                            ),*/
                             fillColor: Colors.transparent,
                             suffixIcon: InkWell(
                               onTap: () {

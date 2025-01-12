@@ -76,16 +76,17 @@ class Comments {
   String? userId;
   String? timestamp;
   String? image;
+  String? commentId;
 
   Comments(
       this.comment, this.username, this.userId, this.timestamp, this.image);
 
   Comments.fromJson(Map<String, dynamic> json) {
-    comment = json['comment'].toString();
-    username = json['username'].toString();
-    userId = json['userId'].toString();
-    timestamp = json['timestamp'].toString();
-    image = json['image'].toString();
+    comment = json['commentText']; // Map 'commentText' to 'comment'
+    username = json['userName']?.toString() ?? "";// Optional, in case it's missing
+    userId = json['userId']?.toString(); // Map 'userId'
+    timestamp = json['createdDate']?.toString() ?? ""; // Use 'createdDate' for timestamp
+    image = json['image']?.toString() ?? ""; // Optional, in case it's missing
   }
 
   Map<String, dynamic> toMap() {

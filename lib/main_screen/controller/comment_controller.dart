@@ -5,9 +5,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
+import 'package:image_picker/image_picker.dart';
 import 'package:ourworldmain/common/widgets.dart';
+import 'package:ourworldmain/constants/RemoteUtils.dart';
 import 'package:ourworldmain/constants/storage_constants.dart';
 import 'package:ourworldmain/constants/string_constants.dart';
 import 'package:ourworldmain/notifications.dart';
@@ -25,9 +26,63 @@ class CommentController extends GetxController {
   XFile? commentImage;
   var commentImagePath = "".obs;
   var isLoading = false.obs;
+  String postId = "";
 
-  fetchComments() async {
-    commentList.value.clear();
+  Future<void> fetchComments(String id, String user) async {
+    // Clear the existing comments list
+    commentList.clear();
+    isLoading.value = true;
+
+    // Retrieve token (Replace this with your actual token retrieval logic)
+    String? token = store.read('token');
+    int? userId = store.read('userId');
+    postId = id;
+
+    if (token == null) {
+      print("Token is null or invalid.");
+      return;
+    }
+
+    // Setup headers
+    var headers = {
+      'Accept': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
+
+    try {
+      var request = http.Request(
+        'GET',
+        Uri.parse("${BaseURL.BASEURL}${ApiEndPoints.GETCOMMENTS}?postId=$postId"),
+      );
+      request.headers.addAll(headers);
+
+      http.StreamedResponse response = await request.send();
+
+      if (response.statusCode == 200) {
+        // Parse the response body
+        var responseBody = await response.stream.bytesToString();
+        var jsonData = jsonDecode(responseBody) as List;
+
+        // Clear the current list to avoid duplicate entries
+        commentList.clear();
+
+        // Iterate over the JSON data and create Comments objects
+        for (var item in jsonData) {
+          commentList.add(
+            Comments.fromJson(item), // Use the factory constructor to parse JSON
+          );
+        }
+        isLoading.value = false;
+        print("Comments fetched successfully.");
+      } else {
+        isLoading.value = false;
+        print("Failed to fetch comments: ${response.reasonPhrase}");
+      }
+    } catch (e) {
+      isLoading.value = false;
+      print("Error fetching comments: $e");
+    }
+
   }
 
 
@@ -67,26 +122,70 @@ class CommentController extends GetxController {
       showDebugPrint("error while picking file.");
     }
   }
-  Future<String?> getTokenByUserId(String userId) async {
+
+  Future<void> uploadComment(String imageUrl, String user) async {
     try {
+      // Retrieve the token for the user
+      String? token = store.read('token');
+      int? userId = store.read('userId');
+
+      if (token == null || token.isEmpty) {
+        print("User token is not available");
+        return;
+      }
+
+      // Prepare the headers
+      var headers = {
+        'Content-Type': 'application/json',
+        'Authorization': "Bearer $token",
+      };
+
+      // Prepare the request body
+      var requestBody = {
+        "userId": userId,
+        "commentText": commentController.value.text,
+      };
+
+      // Create the request
+      var request = http.Request(
+        'POST',
+        Uri.parse(BaseURL.BASEURL +
+            ApiEndPoints.POSTCOMMENTS +
+            "?postId=" +
+            postId),
+      );
+      request.body = json.encode(requestBody);
+      request.headers.addAll(headers);
+
+      // Send the request
+      http.StreamedResponse response = await request.send();
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        // Parse the response body
+        String responseBody = await response.stream.bytesToString();
+        print('Comment uploaded successfully: $responseBody');
+
+        // Add the comment to the comment list
+        commentList.value.add(
+          Comments(
+            commentController.value.text,
+            store.read('userName'),
+            store.read('userId').toString(),
+            DateTime.now().toUtc().millisecondsSinceEpoch.toString(),
+            imageUrl,
+          ),
+        );
+        isLoading.value = false;
+        commentController.value.text = "";
+      } else {
+        isLoading.value = false;
+        print('Failed to upload comment. Status Code: ${response.statusCode}');
+        print('Reason: ${response.reasonPhrase}');
+      }
     } catch (e) {
-      print('Error getting token: $e');
-      return null;
+      isLoading.value = false;
+      print("Error uploading comment: $e");
     }
-  }
-  Future<void> uploadComment(String imageUrl,String user) async {
-    String token = await getTokenByUserId(user)??"";
-
-    if(token.isNotEmpty){
-      await NotificationPlugin.sendNotificationFCM(token, newComment.tr,'${store.read(userName)} ${addedCommentOnYourPost.tr}');
-    }
-    commentList.value.add(Comments(
-        commentController.value.text,
-        store.read(userName),
-        store.read(userId),
-        (DateTime.now().toUtc().millisecondsSinceEpoch).toString(),
-        imageUrl));
-
   }
 
   void showLoginDialog() {
