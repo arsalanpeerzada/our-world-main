@@ -138,11 +138,11 @@ class MainScreenController extends GetxController {
               // Create PostModel object for each post and add it to the list
               PostModel postModel = PostModel.fromJson(post); // Add to hiddenPostList
               postModel.text = post["postText"];
-              postModel.username = post['user']['userName'].toString();
+              postModel.username = post['userName'].toString();
               postModel.country = post['countryId'];
               postModel.category = post['categoryId'];
               postModel.id = post['postId'].toString();
-              postModel.userId = post['user']['userId'].toString();
+              postModel.userId = post['userId'].toString();
 
               // Optionally, add to postList and duplicatePostList if needed
               postList.add(postModel);
@@ -456,7 +456,7 @@ class MainScreenController extends GetxController {
                             store.erase();
                             username.value = "";
                            // await FirebaseAuth.instance.signOut();
-                            Get.offAll(() => LoginScreen());
+                            Get.offAll(() => MainScreen());
                             Get.back();
                           },
                           child: Container(
@@ -486,10 +486,13 @@ class MainScreenController extends GetxController {
   void mygetUserData(BuildContext context) {
     String? uid = store.read(userName) ?? "";
     String token = store.read('token') ?? "";
+
     if(uid != "") {
       print(uid);
       applicationUser = uid;
       isLoggedIn = true;
+    }else {
+      isLoggedIn = false;
     }
   }
 }

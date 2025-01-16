@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:dropdown_button2/src/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -14,9 +15,7 @@ import '../../constants/app_images.dart';
 class AddPostScreen extends StatelessWidget {
   var controller = Get.put(PostController());
 
-  AddPostScreen() {
-    controller.fetchUserPost();
-  }
+  AddPostScreen() {}
 
   @override
   Widget build(BuildContext context) {
@@ -33,8 +32,10 @@ class AddPostScreen extends StatelessWidget {
                     height: SizeConfig.blockSizeVertical * 5,
                   ),
                   Center(
-                    child: headingText(addPost.tr,
-                        SizeConfig.blockSizeHorizontal * 8, colorBlack),
+                    child: headingText(
+                        controller.isEdit ? addPost.tr : editPost.tr,
+                        SizeConfig.blockSizeHorizontal * 8,
+                        colorBlack),
                   ),
                   SizedBox(
                     height: SizeConfig.blockSizeVertical * 5,
@@ -328,21 +329,24 @@ class AddPostScreen extends StatelessWidget {
                                             child: Column(
                                               children: [
                                                 IconButton(
-                                                  onPressed: (){
-                                                    controller.imageUrlList.removeAt(index);
+                                                  onPressed: () {
+                                                    controller.imageUrlList
+                                                        .removeAt(index);
                                                   },
-                                                  icon: const Icon(Icons.close,),
+                                                  icon: const Icon(
+                                                    Icons.close,
+                                                  ),
                                                 ),
                                                 FadeInImage.assetNetwork(
                                                   placeholder: placeholder,
-                                                  image: controller
-                                                      .imageUrlList.value[index],
+                                                  image: controller.imageUrlList
+                                                      .value[index],
                                                   width: SizeConfig
                                                           .blockSizeHorizontal *
                                                       20,
-                                                  height:
-                                                      SizeConfig.blockSizeVertical *
-                                                          15,
+                                                  height: SizeConfig
+                                                          .blockSizeVertical *
+                                                      15,
                                                   fit: BoxFit.fill,
                                                 ),
                                               ],
@@ -364,14 +368,18 @@ class AddPostScreen extends StatelessWidget {
                                               child: Column(
                                                 children: [
                                                   IconButton(
-                                                    onPressed: (){
-                                                      controller.imageFileList.removeAt(index);
+                                                    onPressed: () {
+                                                      controller.imageFileList
+                                                          .removeAt(index);
                                                     },
-                                                    icon: const Icon(Icons.close),
+                                                    icon:
+                                                        const Icon(Icons.close),
                                                   ),
                                                   Image.file(
-                                                    File(controller.imageFileList
-                                                        .value[index].path),
+                                                    File(controller
+                                                        .imageFileList
+                                                        .value[index]
+                                                        .path),
                                                     width: SizeConfig
                                                             .blockSizeHorizontal *
                                                         20,

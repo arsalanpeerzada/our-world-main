@@ -33,6 +33,7 @@ const photo = "Photo";
 const upto5Photos = "Up To 5 Photos";
 const add = "Add";
 const addPost = "Add Post";
+const editPost = "Edit Post";
 const youCanOnlySelectUpto5Photos = "You Can Only Select Up To 5 Photos";
 const chooseCountry = "Choose Country";
 const chooseCategory = "Choose Category";

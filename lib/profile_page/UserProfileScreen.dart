@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:ourworldmain/profile_page/ProfileManageScreen.dart';
+import 'package:ourworldmain/profile_page/UserProfileScreenController.dart';
 
 class UserProfileScreen extends StatelessWidget {
-  const UserProfileScreen({Key? key}) : super(key: key);
+  var controller = Get.put(UserProfileScreenController());
+  UserProfileScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -26,10 +30,11 @@ class UserProfileScreen extends StatelessWidget {
                   'https://i.pravatar.cc/150?img=3'), // Replace with the actual image URL
             ),
             const SizedBox(height: 10),
-            const Text(
-              'John Doe',
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-            ),
+            Obx(() => Text(
+              controller.uservalue.value, // Dynamically bind the username
+              style: const TextStyle(
+                  fontSize: 22, fontWeight: FontWeight.bold),
+            )),
             const SizedBox(height: 20),
             _buildInputCard(
               icon: Icons.account_balance,
@@ -68,6 +73,7 @@ class UserProfileScreen extends StatelessWidget {
                 _buildActionButton('Clear All', Colors.white),
                 _buildActionButton('Save', Colors.white),
                 _buildActionButton('Update', Colors.white),
+                _buildActionButton('Next', Colors.white),
               ],
             ),
           ],
@@ -115,7 +121,11 @@ class UserProfileScreen extends StatelessWidget {
 
   Widget _buildActionButton(String label, Color color) {
     return ElevatedButton(
-      onPressed: () {},
+      onPressed: () {
+        if(label == "Next"){
+          Get.to(() => ProfileManageScreen());
+        }
+      },
       style: ElevatedButton.styleFrom(
         backgroundColor: color,
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),

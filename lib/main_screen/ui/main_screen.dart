@@ -1,4 +1,3 @@
-
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -9,7 +8,6 @@ import 'package:ourworldmain/live_screen/ui/live_screen.dart';
 import 'package:ourworldmain/main_screen/controller/main_screen_controller.dart';
 import 'package:ourworldmain/main_screen/ui/comment_screen.dart';
 import 'package:ourworldmain/post/model/post_model.dart';
-import 'package:ourworldmain/profile/ui/profile_screen.dart';
 import 'package:ourworldmain/profile_page/UserProfileScreen.dart';
 import 'package:ourworldmain/terms/view.dart';
 
@@ -26,9 +24,7 @@ class MainScreen extends StatelessWidget {
 
   MainScreen({super.key}) {
     controller.fetchPosts();
-
   }
-
 
   final List<Map<String, dynamic>> hardcodedData = [
     {
@@ -36,7 +32,7 @@ class MainScreen extends StatelessWidget {
       'streaming_token': 'token_123',
       'streaming_channel': 'channel_1',
       'user_name': 'John Doe',
-      'user_image':'', // Replace with actual image URL or leave it empty
+      'user_image': '', // Replace with actual image URL or leave it empty
     },
     {
       'user_id': '2',
@@ -89,11 +85,11 @@ class MainScreen extends StatelessWidget {
               },
               child: Padding(
                 padding: const EdgeInsets.all(12.0),
-                child: Image.asset(
+                child:controller.isLoggedIn ? Image.asset(
                   live,
                   width: SizeConfig.blockSizeHorizontal * 9,
                   height: SizeConfig.blockSizeVertical * 5,
-                ),
+                ) : null,
               ),
             ),
             InkWell(
@@ -102,24 +98,25 @@ class MainScreen extends StatelessWidget {
               },
               child: Padding(
                 padding: const EdgeInsets.all(12.0),
-                child: Image.asset(
+                child: controller.isLoggedIn ? Image.asset(
                   plus,
                   width: SizeConfig.blockSizeHorizontal * 6.5,
                   height: SizeConfig.blockSizeVertical * 2.8,
-                ),
+                ) : null,
               ),
             ),
-            InkWell(
-              onTap: () {
-                Get.to(() => LoginScreen());
-              },
-              child: Padding(
-                padding: const EdgeInsets.only(
-                    left: 12.0, top: 12.0, bottom: 12.0),
-                child: headingText(enter,
-                    SizeConfig.blockSizeHorizontal * 5.2, colorBlack),
-              ),
-            )
+
+              InkWell(
+                onTap: () {
+                  Get.to(() => LoginScreen());
+                },
+                child: Padding(
+                  padding: const EdgeInsets.only(
+                      left: 12.0, top: 12.0, bottom: 12.0),
+                  child: !controller.isLoggedIn ? headingText(
+                      enter, SizeConfig.blockSizeHorizontal * 5.2, colorBlack) : null,
+                ),
+              )
           ],
         ),
       ),
@@ -135,7 +132,7 @@ class MainScreen extends StatelessWidget {
                 onTap: () {
                   if (controller.isLoggedIn) {
                     Get.to(() => UserProfileScreen());
-                  }else{
+                  } else {
                     Get.to(() => LoginScreen());
                   }
                 },
@@ -143,19 +140,28 @@ class MainScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     // Profile Picture
+                    headingText(
+                      "My Profile",
+                      SizeConfig.blockSizeHorizontal * 4,
+                      appColor,
+                      weight: FontWeight.w600,
+                    ),
                     CircleAvatar(
-                        radius: 40, // Adjust the size of the profile picture
-                            backgroundImage: NetworkImage('https://i.pravatar.cc/150?img=3'), // Default profile picture URL // Assuming profile picture URL is available in controller
-                        backgroundColor: Colors.grey.shade200, // Placeholder color
-                      ),
-                    const SizedBox(height: 10),
+                      radius: 40,
+                      // Adjust the size of the profile picture
+                      backgroundImage:
+                          NetworkImage('https://i.pravatar.cc/150?img=3'),
+                      // Default profile picture URL // Assuming profile picture URL is available in controller
+                      backgroundColor:
+                          Colors.grey.shade200, // Placeholder color
+                    ),
                     // Name Label
                     headingText(
-                        controller.isLoggedIn ? controller.applicationUser : "",
-                        SizeConfig.blockSizeHorizontal * 4,
-                        appColor,
-                        weight: FontWeight.w600,
-                      ),
+                      controller.isLoggedIn ? controller.applicationUser : "",
+                      SizeConfig.blockSizeHorizontal * 4,
+                      appColor,
+                      weight: FontWeight.w600,
+                    ),
                   ],
                 ),
               ),
@@ -238,8 +244,7 @@ class MainScreen extends StatelessWidget {
               ),
           ],
         ),
-      )
-          ,
+      ),
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -261,14 +266,14 @@ class MainScreen extends StatelessWidget {
                         child: InkWell(
                           onTap: () {
                             Get.to(() => LiveScreen(
-                              isHost: false,
-                              streamingUserIds: userData['user_id'],
-                              streamingToken: userData['streaming_token'],
-                              streamingJoiningId: "0",
-                              groupStreaming: false,
-                              hostId: "0",
-                              channelName: userData['streaming_channel'],
-                            ));
+                                  isHost: false,
+                                  streamingUserIds: userData['user_id'],
+                                  streamingToken: userData['streaming_token'],
+                                  streamingJoiningId: "0",
+                                  groupStreaming: false,
+                                  hostId: "0",
+                                  channelName: userData['streaming_channel'],
+                                ));
                           },
                           child: Container(
                             decoration: const BoxDecoration(
@@ -282,18 +287,19 @@ class MainScreen extends StatelessWidget {
                             width: SizeConfig.blockSizeVertical * 10,
                             height: SizeConfig.blockSizeVertical * 10,
                             child: userData['user_image'] != null &&
-                                userData['user_image'] != '' &&
-                                userData['user_image'] != 'null'
+                                    userData['user_image'] != '' &&
+                                    userData['user_image'] != 'null'
                                 ? Image.network(
-                              userData['user_image'],
-                              fit: BoxFit.cover,
-                            )
+                                    userData['user_image'],
+                                    fit: BoxFit.cover,
+                                  )
                                 : Image.asset('assets/images/profile3d.png'),
                           ),
                         ),
                       ),
                       headingText(
-                        userData['user_name'] != null && userData['user_name'] != ""
+                        userData['user_name'] != null &&
+                                userData['user_name'] != ""
                             ? userData['user_name']
                             : "user",
                         SizeConfig.blockSizeHorizontal * 3.2,
@@ -636,8 +642,11 @@ class MainScreen extends StatelessWidget {
                       height: 300,
                       child: Center(
                         child: headingText(
-                            controller.isLoggedIn ? noDataFound1.tr : noDataFound.tr,
-                            SizeConfig.blockSizeHorizontal * 4, colorGrey,
+                            controller.isLoggedIn
+                                ? noDataFound1.tr
+                                : noDataFound.tr,
+                            SizeConfig.blockSizeHorizontal * 4,
+                            colorGrey,
                             weight: FontWeight.w500),
                       ),
                     ),
@@ -842,7 +851,8 @@ class MainScreen extends StatelessWidget {
                           padding: const EdgeInsets.all(4),
                           decoration: const BoxDecoration(
                               color: Colors.grey,
-                              borderRadius: BorderRadius.all(Radius.circular(5))),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(5))),
                           child: headingText(
                               list.country == 1
                                   ? inArabRegion.tr
@@ -868,7 +878,8 @@ class MainScreen extends StatelessWidget {
                             padding: const EdgeInsets.all(4),
                             decoration: const BoxDecoration(
                                 color: Colors.grey,
-                                borderRadius: BorderRadius.all(Radius.circular(5))),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(5))),
                             child: headingText(
                                 list.category == 1
                                     ? fashion.tr
@@ -883,7 +894,8 @@ class MainScreen extends StatelessWidget {
                                                     : other.tr,
                                 SizeConfig.blockSizeHorizontal * 3,
                                 Colors.white,
-                                weight: FontWeight.w500,maxLines: 1),
+                                weight: FontWeight.w500,
+                                maxLines: 1),
                           ),
                         )
                       ],
@@ -931,7 +943,8 @@ class MainScreen extends StatelessWidget {
                       const Spacer(),
                       InkWell(
                         onTap: () {
-                          Get.to(() => CommentScreen(list.id.toString(),list.userId.toString()));
+                          Get.to(() => CommentScreen(
+                              list.id.toString(), list.userId.toString()));
                         },
                         child: Padding(
                           padding: const EdgeInsets.all(12.0),

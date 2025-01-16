@@ -25,6 +25,16 @@ class CommentScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: colorWhite,
+          elevation: 0,
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back, color: colorBlack),
+            onPressed: () {
+              Navigator.pop(context); // Navigate back to the previous screen
+            },
+          ),
+        ),
         resizeToAvoidBottomInset: false,
         backgroundColor: colorWhite,
         body: SingleChildScrollView(
@@ -36,29 +46,29 @@ class CommentScreen extends StatelessWidget {
                     SizedBox(
                       height: SizeConfig.blockSizeVertical * 4,
                     ),
-                   Obx(() => controller.commentImagePath.value != "" ?
-                   SizedBox(
-                              child: Padding(
-                                padding: const EdgeInsets.all(10.0),
-                                child: Image.file(
-                                  File(controller.commentImagePath.value),
-                                  width: SizeConfig.blockSizeHorizontal * 20,
-                                  height: SizeConfig.blockSizeVertical * 15,
-                                  fit: BoxFit.fill,
-                                ),
-                              ),
-                            ):Container(),
-                   ),
+                    Obx(() => controller.commentImagePath.value != ""
+                        ? SizedBox(
+                      child: Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: Image.file(
+                          File(controller.commentImagePath.value),
+                          width: SizeConfig.blockSizeHorizontal * 20,
+                          height: SizeConfig.blockSizeVertical * 15,
+                          fit: BoxFit.fill,
+                        ),
+                      ),
+                    )
+                        : Container()),
                     Container(
                       decoration: const BoxDecoration(
                           color: colorLightGreyBg,
                           borderRadius: BorderRadius.all(
                             Radius.circular(50.0),
                           )),
-                      margin:
-                          const EdgeInsets.only(left: 15.0, right: 15.0, bottom: 10),
+                      margin: const EdgeInsets.only(
+                          left: 15.0, right: 15.0, bottom: 10),
                       child: Padding(
-                        padding: const EdgeInsets.all(4.0),
+                        padding: const EdgeInsets.all(8.0),
                         child: TextFormField(
                           controller: controller.commentController.value,
                           cursorColor: colorRed,
@@ -70,24 +80,6 @@ class CommentScreen extends StatelessWidget {
                             hintStyle: const TextStyle(color: colorGrey),
                             filled: true,
                             border: InputBorder.none,
-                            /*prefixIcon: InkWell(
-                              onTap: () {
-                                controller.openGallery();
-                              },
-                              child: Container(
-                                width: SizeConfig.blockSizeVertical * 1,
-                                height: SizeConfig.blockSizeVertical * 1,
-                                margin: const EdgeInsets.all(5),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(10.0),
-                                  child: Image.asset(
-                                    attachment,
-                                    width: SizeConfig.blockSizeVertical * 3,
-                                    height: SizeConfig.blockSizeVertical * 3,
-                                  ),
-                                ),
-                              ),
-                            ),*/
                             fillColor: Colors.transparent,
                             suffixIcon: InkWell(
                               onTap: () {
@@ -114,39 +106,49 @@ class CommentScreen extends StatelessWidget {
                     ),
                     SizedBox(
                       child: Obx(
-                        () => controller.commentList.value.isNotEmpty
+                            () => controller.commentList.value.isNotEmpty
                             ? ListView.builder(
-                              itemCount: controller.commentList.value.length,
-                              scrollDirection: Axis.vertical,
-                              shrinkWrap: true,
-                             reverse: true,
-                              primary: false,
-                              itemBuilder: (context, index) {
-                                return chatRowItem(
-                                    controller.commentList.value[index], index);
-                              },
-                            )
+                          itemCount: controller.commentList.value.length,
+                          scrollDirection: Axis.vertical,
+                          shrinkWrap: true,
+                          reverse: true,
+                          primary: false,
+                          itemBuilder: (context, index) {
+                            return chatRowItem(
+                                controller.commentList.value[index], index);
+                          },
+                        )
                             : Container(
-                                height: 600,
-                                child: Center(
-                                  child: headingText(noDataFound.tr,
-                                      SizeConfig.blockSizeHorizontal * 4, colorGrey,
-                                      weight: FontWeight.w500),
-                                ),
-                              ),
+                          height: 600,
+                          child: Center(
+                            child: headingText(
+                                noDataFound.tr,
+                                SizeConfig.blockSizeHorizontal * 4,
+                                colorGrey,
+                                weight: FontWeight.w500),
+                          ),
+                        ),
                       ),
                     ),
                   ],
                 ),
               ),
-              Obx (() => controller.isLoading.value == true ? Container( width: SizeConfig.screenWidth, height : SizeConfig.screenHeight, child: Center(child: commonLoader())) : Container(),),
-
+              Obx(
+                    () => controller.isLoading.value == true
+                    ? Container(
+                  width: SizeConfig.screenWidth,
+                  height: SizeConfig.screenHeight,
+                  child: Center(child: commonLoader()),
+                )
+                    : Container(),
+              ),
             ],
           ),
         ),
       ),
     );
   }
+
 
   Widget chatRowItem(Comments comments, int index) {
     return Padding(
