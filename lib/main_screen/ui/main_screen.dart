@@ -81,42 +81,47 @@ class MainScreen extends StatelessWidget {
             ),
             InkWell(
               onTap: () {
-                controller.getUserData(context);
+                controller.isLoggedIn
+                    ? controller.getUserData(context)
+                    : Get.to(() => LoginScreen());
               },
               child: Padding(
                 padding: const EdgeInsets.all(12.0),
-                child:controller.isLoggedIn ? Image.asset(
+                child: Image.asset(
                   live,
                   width: SizeConfig.blockSizeHorizontal * 9,
                   height: SizeConfig.blockSizeVertical * 5,
-                ) : null,
+                ),
               ),
             ),
             InkWell(
               onTap: () {
-                Get.to(() => AddPostScreen());
+                controller.isLoggedIn
+                    ? Get.to(() => AddPostScreen())
+                    : Get.to(() => LoginScreen());
               },
               child: Padding(
                 padding: const EdgeInsets.all(12.0),
-                child: controller.isLoggedIn ? Image.asset(
+                child: Image.asset(
                   plus,
                   width: SizeConfig.blockSizeHorizontal * 6.5,
                   height: SizeConfig.blockSizeVertical * 2.8,
-                ) : null,
+                ),
               ),
             ),
-
-              InkWell(
-                onTap: () {
-                  Get.to(() => LoginScreen());
-                },
-                child: Padding(
-                  padding: const EdgeInsets.only(
-                      left: 12.0, top: 12.0, bottom: 12.0),
-                  child: !controller.isLoggedIn ? headingText(
-                      enter, SizeConfig.blockSizeHorizontal * 5.2, colorBlack) : null,
-                ),
-              )
+            InkWell(
+              onTap: () {
+                Get.to(() => LoginScreen());
+              },
+              child: Padding(
+                padding:
+                    const EdgeInsets.only(left: 12.0, top: 12.0, bottom: 12.0),
+                child: !controller.isLoggedIn
+                    ? headingText(
+                        enter, SizeConfig.blockSizeHorizontal * 5.2, colorBlack)
+                    : null,
+              ),
+            )
           ],
         ),
       ),
@@ -125,6 +130,7 @@ class MainScreen extends StatelessWidget {
           padding: EdgeInsets.zero,
           children: [
             DrawerHeader(
+              padding: EdgeInsets.only(bottom: 10),
               decoration: const BoxDecoration(
                 color: colorScreenBg,
               ),
@@ -239,7 +245,8 @@ class MainScreen extends StatelessWidget {
                   weight: FontWeight.w400,
                 ),
                 onTap: () {
-                  controller.showLogoutDialog(context);
+                  // controller.showLogoutDialog(context);
+                  controller.LogOut();
                 },
               ),
           ],

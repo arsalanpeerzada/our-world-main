@@ -19,6 +19,7 @@ class ProfileManageScreen extends StatelessWidget {
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
+
           children: [
             _buildInputCard(
               label: "Add Money \$",
@@ -32,6 +33,16 @@ class ProfileManageScreen extends StatelessWidget {
               hintText: "",
             ),
             const SizedBox(height: 10),
+            Padding(
+              padding: const EdgeInsets.only(left: 8.0),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  "Please Note if you choose money back, company will cut 20% as taxes",
+                  style: TextStyle(color: Colors.green,fontSize: 10),
+                ),
+              ),
+            ),
             _buildInputCard(
               label: "Get my money back",
               icon: Icons.add,
@@ -65,6 +76,12 @@ class ProfileManageScreen extends StatelessWidget {
             _buildInputCard(
               label: "Total Profile for all",
               icon: null,
+              hintText: "",
+            ),
+            const SizedBox(height: 10),
+            _buildInputCard(
+              label: "Total profit for events",
+              icon: Icons.add,
               hintText: "",
             ),
             const SizedBox(height: 10),

@@ -7,11 +7,13 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:http/http.dart' as http;
 import 'package:ourworldmain/constants/RemoteUtils.dart';
 import 'package:ourworldmain/constants/string_constants.dart';
 import 'package:ourworldmain/main_screen/ui/main_screen.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 import '../../common/size_config.dart';
 import '../../common/widgets.dart';
 import '../../constants/app_colors.dart';
@@ -19,8 +21,6 @@ import '../../constants/storage_constants.dart';
 import '../../live_screen/ui/live_screen.dart';
 import '../../login/login_screen.dart';
 import '../../post/model/post_model.dart';
-import 'package:http/http.dart' as http;
-
 import '../../profile/model/profile_model.dart';
 
 class MainScreenController extends GetxController {
@@ -43,6 +43,7 @@ class MainScreenController extends GetxController {
   var blockedUsers = <String>[].obs;
   var hiddenPosts = <String>[].obs;
   SharedPreferences? sharedPreferences;
+
   @override
   void dispose() {
     // TODO: implement dispose
@@ -63,9 +64,8 @@ class MainScreenController extends GetxController {
       }
     });
 
-   /* var data = store.read(userName);
+    /* var data = store.read(userName);
     applicationUser = data;*/
-
   }
 
   final bannerAdId = Platform.isAndroid
@@ -95,67 +95,74 @@ class MainScreenController extends GetxController {
   }
 
   getHiddenPosts() async {
-    try {
-      String? token = store.read('token');
-      int? userId = store.read('userId');
+    if (store.hasData('token')) {
+      try {
+        String? token = store.read('token');
+        int? userId = store.read('userId');
 
-      // Check if the user is logged in
-      if (userId == 0 || userId == null) {
-        showLoginDialog();
-      } else {
-        var headers = {
-          'Content-Type': 'application/json',
-          'Authorization': "Bearer $token",
-        };
-
-        var request = http.Request(
-            'GET',
-            Uri.parse(BaseURL.BASEURL + ApiEndPoints.GETPOST + "?userId=" + userId.toString())
-        );
-
-        request.headers.addAll(headers);
-
-        // Send the request
-        http.StreamedResponse response = await request.send();
-
-        if (response.statusCode == 200) {
-          // Successfully received the response
-          String responseBody = await response.stream.bytesToString();
-          print('Response Body: $responseBody');
-
-          // Parse the response JSON
-          Map<String, dynamic> responseJson = json.decode(responseBody);
-
-          if (responseJson['status'] == 'success' && responseJson['data'] != null) {
-            // Clear old data
-            hiddenPosts.clear();
-            postList.clear();
-            duplicatePostList.clear();
-
-            // Loop through each post in the response data
-            List<dynamic> postsData = responseJson['data'];
-            for (var post in postsData) {
-              // Create PostModel object for each post and add it to the list
-              PostModel postModel = PostModel.fromJson(post); // Add to hiddenPostList
-              postModel.text = post["postText"];
-              postModel.username = post['userName'].toString();
-              postModel.country = post['countryId'];
-              postModel.category = post['categoryId'];
-              postModel.id = post['postId'].toString();
-              postModel.userId = post['userId'].toString();
-
-              // Optionally, add to postList and duplicatePostList if needed
-              postList.add(postModel);
-              duplicatePostList.add(postModel);
-            }
-          }
+        // Check if the user is logged in
+        if (userId == 0 || userId == null) {
+          showLoginDialog();
         } else {
-          print('Failed to load hidden posts. Status Code: ${response.statusCode}');
+          var headers = {
+            'Content-Type': 'application/json',
+            'Authorization': "Bearer $token",
+          };
+
+          var request = http.Request(
+              'GET',
+              Uri.parse(BaseURL.BASEURL +
+                  ApiEndPoints.GETPOST +
+                  "?userId=" +
+                  userId.toString()));
+
+          request.headers.addAll(headers);
+
+          // Send the request
+          http.StreamedResponse response = await request.send();
+
+          if (response.statusCode == 200) {
+            // Successfully received the response
+            String responseBody = await response.stream.bytesToString();
+            print('Response Body: $responseBody');
+
+            // Parse the response JSON
+            Map<String, dynamic> responseJson = json.decode(responseBody);
+
+            if (responseJson['status'] == 'success' &&
+                responseJson['data'] != null) {
+              // Clear old data
+              hiddenPosts.clear();
+              postList.clear();
+              duplicatePostList.clear();
+
+              // Loop through each post in the response data
+              List<dynamic> postsData = responseJson['data'];
+              for (var post in postsData) {
+                // Create PostModel object for each post and add it to the list
+                PostModel postModel =
+                    PostModel.fromJson(post); // Add to hiddenPostList
+                postModel.text = post["postText"];
+                postModel.username = post['userName'].toString();
+                postModel.country = post['countryId'];
+                postModel.category = post['categoryId'];
+                postModel.id = post['postId'].toString();
+                postModel.userId = post['userId'].toString();
+
+                // Optionally, add to postList and duplicatePostList if needed
+                postList.add(postModel);
+                duplicatePostList.add(postModel);
+              }
+            }
+          } else {
+            print(
+                'Failed to load hidden posts. Status Code: ${response.statusCode}');
+          }
         }
+      } catch (e) {
+        // Handle error if the API call fails
+        print("Error fetching hidden posts: $e");
       }
-    } catch (e) {
-      // Handle error if the API call fails
-      print("Error fetching hidden posts: $e");
     }
   }
 
@@ -177,9 +184,7 @@ class MainScreenController extends GetxController {
     ).load();
   }
 
-  Future reportPost(String postId, String report) async {
-
-  }
+  Future reportPost(String postId, String report) async {}
 
   Future blockUser(String postId, String report) async {
     // await FirebaseFirestore.instance
@@ -207,7 +212,6 @@ class MainScreenController extends GetxController {
         ));
   }
 
-
   showSubscriptionDialog(BuildContext context) async {
     await showDialog(
       context: Get.context!,
@@ -226,7 +230,14 @@ class MainScreenController extends GetxController {
             isDefaultAction: true,
             onPressed: () async {
               Navigator.of(context, rootNavigator: true).pop();
-              Get.to(() => const LiveScreen(isHost: true,streamingUserIds:  "", streamingToken: "", streamingJoiningId: "0", groupStreaming: false, hostId: "0",channelName:  ''));
+              Get.to(() => const LiveScreen(
+                  isHost: true,
+                  streamingUserIds: "",
+                  streamingToken: "",
+                  streamingJoiningId: "0",
+                  groupStreaming: false,
+                  hostId: "0",
+                  channelName: ''));
               // Get.to(() => PlanScreen(
               //       showFree: false,
               //     ));
@@ -304,8 +315,15 @@ class MainScreenController extends GetxController {
   }
 
   checkMembershipDate(BuildContext context) async {
-  // Get.to(() => HostScreen());
-      Get.to(() => const LiveScreen(isHost: true,streamingUserIds:  "", streamingToken: "", streamingJoiningId: "0", groupStreaming: true, hostId: "0",channelName:  ''));
+    // Get.to(() => HostScreen());
+    Get.to(() => const LiveScreen(
+        isHost: true,
+        streamingUserIds: "",
+        streamingToken: "",
+        streamingJoiningId: "0",
+        groupStreaming: true,
+        hostId: "0",
+        channelName: ''));
     // print('aaaaaa');
     // showDebugPrint('aazzz');
     // int? subscibedDateInt = store.read(membershipDate);
@@ -330,7 +348,6 @@ class MainScreenController extends GetxController {
   filterButtonTap() async {
     postList.clear();
     duplicatePostList.clear();
-
   }
 
   fetchPosts() async {
@@ -369,17 +386,16 @@ class MainScreenController extends GetxController {
   Future<void> shareLink() async {
     await Share.share(
       postShareText.tr,
-        subject: postShareSubject.tr,
+      subject: postShareSubject.tr,
 
-
-        // title: "hi",
-        // text: list.text == "" || list.text == null
-        //     ? '\n\n Watch the below post \n\n${list.username} from ${list.country} added a post having  \n\n Check 1st Image: ${list.images![0].image}'
-        //     : list.images!.isEmpty
-        //         ? '\n\n Watch the below post \n\n${list.username} from ${list.country} added a post having  \n\n Content: ${list.text}'
-        //         : 'Hi!!\n\n Watch the below post \n\n${list.username} from ${list.country} added a post having  \n\n Content: ${list.text} \n\n Check 1st Image: ${list.images![0].image}',
-        // chooserTitle: 'Example Chooser Title'
-        );
+      // title: "hi",
+      // text: list.text == "" || list.text == null
+      //     ? '\n\n Watch the below post \n\n${list.username} from ${list.country} added a post having  \n\n Check 1st Image: ${list.images![0].image}'
+      //     : list.images!.isEmpty
+      //         ? '\n\n Watch the below post \n\n${list.username} from ${list.country} added a post having  \n\n Content: ${list.text}'
+      //         : 'Hi!!\n\n Watch the below post \n\n${list.username} from ${list.country} added a post having  \n\n Content: ${list.text} \n\n Check 1st Image: ${list.images![0].image}',
+      // chooserTitle: 'Example Chooser Title'
+    );
   }
 
 /*void showCountriesDialog() {
@@ -410,7 +426,6 @@ class MainScreenController extends GetxController {
     Get.dialog(
       AlertDialog(
         shape: const RoundedRectangleBorder(
-
           borderRadius: BorderRadius.all(Radius.circular(30.0)),
         ),
         content: SizedBox(
@@ -455,7 +470,7 @@ class MainScreenController extends GetxController {
                           onTap: () async {
                             store.erase();
                             username.value = "";
-                           // await FirebaseAuth.instance.signOut();
+                            // await FirebaseAuth.instance.signOut();
                             Get.offAll(() => MainScreen());
                             Get.back();
                           },
@@ -483,15 +498,23 @@ class MainScreenController extends GetxController {
     );
   }
 
+  void LogOut(){
+    store.erase();
+    username.value = "";
+    // await FirebaseAuth.instance.signOut();
+    Get.offAll(() => MainScreen());
+    Get.back();
+  }
+
   void mygetUserData(BuildContext context) {
     String? uid = store.read(userName) ?? "";
     String token = store.read('token') ?? "";
 
-    if(uid != "") {
+    if (uid != "") {
       print(uid);
       applicationUser = uid;
       isLoggedIn = true;
-    }else {
+    } else {
       isLoggedIn = false;
     }
   }

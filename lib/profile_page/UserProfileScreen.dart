@@ -37,6 +37,11 @@ class UserProfileScreen extends StatelessWidget {
             )),
             const SizedBox(height: 20),
             _buildInputCard(
+              icon: Icons.person,
+              label: 'Name as your passport/national card',
+              hintText: 'John Doe',
+            ),
+            _buildInputCard(
               icon: Icons.account_balance,
               label: 'PayPal Accounts',
               hintText: '352.96 × 78',
