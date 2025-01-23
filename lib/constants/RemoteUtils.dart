@@ -6,6 +6,8 @@ class ApiEndPoints {
   static const POSTCOMMENTS = "posts/comments";
   static const GETCOMMENTS = "posts/comments";
   static const GETPOSTBYID = "post/getPostById";
+  static const GETPOSTBYFILTER = "post/getAllPostByCategory";
+
 }
 
 class BaseURL {

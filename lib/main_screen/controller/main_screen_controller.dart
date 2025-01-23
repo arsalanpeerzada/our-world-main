@@ -348,6 +348,10 @@ class MainScreenController extends GetxController {
   filterButtonTap() async {
     postList.clear();
     duplicatePostList.clear();
+
+    var country = selectedCountry.value;
+    var category = selectedCategory.value;
+    filterSearchResults(country, category);
   }
 
   fetchPosts() async {
@@ -359,27 +363,78 @@ class MainScreenController extends GetxController {
     });
   }
 
-  void filterSearchResults(String query) {
-    List<PostModel> dummySearchList = [];
-    dummySearchList.addAll(duplicatePostList);
-    if (query.isNotEmpty) {
-      List<PostModel> dummyListData = [];
-      for (var item in dummySearchList) {
-        if (item.country
-            .toString()
-            .toLowerCase()
-            .contains(query.toLowerCase())) {
-          dummyListData.add(item);
+  void filterSearchResults(int country, int category) async {
+    if (store.hasData('token')) {
+      try {
+        String? token = store.read('token');
+        int? userId = store.read('userId');
+
+        // Check if the user is logged in
+        if (userId == 0 || userId == null) {
+          showLoginDialog();
+        } else {
+          // Headers for the request
+          var headers = {
+            'Authorization': 'Bearer $token',
+            'Cookie': 'JSESSIONID=E9367B6345259CE75747950B3E6075BE'
+            // Update as per your server requirements
+          };
+
+          // Build the API URL with the userId, country, and category parameters
+          var apiUrl = Uri.parse(
+            BaseURL.BASEURL +
+                ApiEndPoints.GETPOSTBYFILTER + '?userId=$userId&countryId=$country&categoryId=$category',
+          );
+
+          // Create the request
+          var request = http.Request('GET', apiUrl);
+          request.headers.addAll(headers);
+
+          // Send the request
+          http.StreamedResponse response = await request.send();
+
+          if (response.statusCode == 200) {
+            // Successfully received the response
+            String responseBody = await response.stream.bytesToString();
+            print('Response Body: $responseBody');
+
+            // Parse the response JSON
+            Map<String, dynamic> responseJson = json.decode(responseBody);
+
+            if (responseJson['status'] == 'success' &&
+                responseJson['data'] != null) {
+              // Clear old data
+              hiddenPosts.clear();
+              postList.clear();
+              duplicatePostList.clear();
+
+              // Loop through each post in the response data
+              List<dynamic> postsData = responseJson['data'];
+              for (var post in postsData) {
+                // Create PostModel object for each post and add it to the list
+                PostModel postModel = PostModel.fromJson(post);
+                postModel.text = post["postText"];
+                postModel.username = post['userName'].toString();
+                postModel.country = post['countryId'];
+                postModel.category = post['categoryId'];
+                postModel.id = post['postId'].toString();
+                postModel.userId = post['userId'].toString();
+
+                // Optionally, add to postList and duplicatePostList
+                postList.add(postModel);
+                duplicatePostList.add(postModel);
+              }
+            }
+          } else {
+            // Log if the response fails
+            print(
+                'Failed to load posts. Status Code: ${response.statusCode}, Reason: ${response.reasonPhrase}');
+          }
         }
+      } catch (e) {
+        // Handle error if the API call fails
+        print("Error fetching posts: $e");
       }
-      postList.clear();
-      postList.addAll(dummyListData);
-      postList.refresh();
-      return;
-    } else {
-      postList.clear();
-      postList.addAll(duplicatePostList);
-      postList.refresh();
     }
   }
 
@@ -498,7 +553,7 @@ class MainScreenController extends GetxController {
     );
   }
 
-  void LogOut(){
+  void LogOut() {
     store.erase();
     username.value = "";
     // await FirebaseAuth.instance.signOut();

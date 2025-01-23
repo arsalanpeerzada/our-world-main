@@ -331,7 +331,7 @@ class MainScreen extends StatelessWidget {
                   controller: controller.searchController.value,
                   cursorColor: colorRed,
                   onChanged: (value) {
-                    controller.filterSearchResults(value);
+                    //controller.filterSearchResults(value);
                   },
                   enabled: true,
                   readOnly: true,
