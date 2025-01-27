@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ourworldmain/common/size_config.dart';
 import 'package:ourworldmain/constants/string_constants.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:ourworldmain/join_us/WebViewPage.dart';
 
 class JoinUsScreen extends StatelessWidget {
   const JoinUsScreen({Key? key}) : super(key: key);
@@ -79,29 +79,15 @@ class JoinUsScreen extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        children: [
-                          SelectableText(
-                            joinUsText.tr,
-                            textAlign: TextAlign.right,
-                            style: TextStyle(fontSize: 16, height: 1.5),
-                          ),
-                          Spacer(),
-                          Align(
-                            alignment: Alignment.centerRight,
-                            child: InkWell(
-                              onTap: () async {
-                                if (!await launchUrl(Uri.parse('https://youtu.be/_YZ0RgePsnE'))) {
-                                  throw Exception('Could not launch link');
-                                }
-                              },
-                              child: Text(
-                                'https://youtu.be/_YZ0RgePsnE',
-                                style: TextStyle(fontSize: 14, color: Colors.blue),
-                              ),
-                            ),
-                          ),
-                        ],
+                      ElevatedButton(
+                        onPressed: () {
+                          Get.to(() => WebViewPage());
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue, // Set the background color to blue
+                          foregroundColor: Colors.white, // Set the text color to white
+                        ),
+                        child: Text(joinUs.tr),
                       ),
                       SizedBox(
                         height: 5,
@@ -180,10 +166,10 @@ There are no guarantors.''',
                     ],
                   ),
                 ),
-
               ))
         ],
       ),
     );
   }
 }
+

@@ -226,8 +226,8 @@ class PostController extends GetxController {
         postData.value.userId = postsData['userId'].toString();
         postData.value.text = postsData["postText"];
         postData.value.username = postsData['userName'].toString();
-        postData.value.country= postsData['countryId'];
-        postData.value.category =  postsData['categoryId'];
+        postData.value.country = postsData['countryId'];
+        postData.value.category = postsData['categoryId'];
         postData.value.timestamp = postsData['updatedDate'];
         postData.value.id = postsData['postId'].toString();
 
@@ -238,11 +238,9 @@ class PostController extends GetxController {
         isEdit = true;
         isLoading.value = false;
 
-
         // If response is JSON, you can decode it
         var data = jsonDecode(responseBody);
         print(data); // Process the data as needed
-
       } else {
         print('Error: ${response.reasonPhrase}');
         isLoading.value = false;
@@ -253,7 +251,61 @@ class PostController extends GetxController {
     }
   }
 
-  void deletePostButtonClick() {}
+   deletePostButtonClick() async {
+     isLoading.value = true;
+    String? authorizationToken = store.read('token');
+    int? postId = store.read('userId');
+
+    if (authorizationToken == null || authorizationToken.isEmpty) {
+      print('Authorization token is missing or empty.');
+      return;
+    }
+
+    var headers = {
+      'Authorization': authorizationToken,
+    };
+
+    // Check if postId is null or invalid
+    if (postId == null) {
+      print('You dont have any post');
+      return;
+    }
+
+    // Construct the URL for the request
+    final uri = Uri.parse(
+        '${BaseURL.BASEURL}${ApiEndPoints.DELETEPOST}?postId=$postId');
+
+    try {
+      // Create the DELETE request
+      var request = http.Request('DELETE', uri);
+      request.headers.addAll(headers);
+
+      // Send the request
+      http.StreamedResponse response = await request.send();
+
+      // Handle the response
+      if (response.statusCode == 200) {
+        // Handle successful response
+        String responseBody = await response.stream.bytesToString();
+        print('Response body: $responseBody');
+        Get.snackbar('Success', 'Post deleted successfully');
+        isLoading.value = false;
+
+        textController.value.clear();
+        imageFileList.clear();
+        selectedCountry.value = 0;
+        selectedCategory.value = 0;
+      } else {
+        // Handle error response
+        print('Failed to delete post. Reason: ${response.reasonPhrase}');
+        isLoading.value = false;
+      }
+    } catch (e) {
+      // Handle any exceptions during the request
+      print('Error occurred while making the request: $e');
+      isLoading.value = false;
+    }
+  }
 
   void showLoginDialog() {
     Get.dialog(

@@ -7,6 +7,7 @@ class ApiEndPoints {
   static const GETCOMMENTS = "posts/comments";
   static const GETPOSTBYID = "post/getPostById";
   static const GETPOSTBYFILTER = "post/getAllPostByCategory";
+  static const DELETEPOST = "post/deletePost";
 
 }
 
