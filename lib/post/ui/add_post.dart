@@ -11,6 +11,7 @@ import 'package:ourworldmain/post/controller/post_controller.dart';
 import 'package:ourworldmain/terms/view.dart';
 
 import '../../constants/app_images.dart';
+import '../../main_screen/ui/main_screen.dart';
 
 class AddPostScreen extends StatelessWidget {
   var controller = Get.put(PostController());
@@ -24,6 +25,13 @@ class AddPostScreen extends StatelessWidget {
       body: SingleChildScrollView(
         child: Stack(
           children: [
+            IconButton(
+              icon: const Icon(Icons.arrow_back),
+              onPressed: () {
+                // Get.to(() => MainScreen());
+                Navigator.pop(context);
+              },
+            ),
             Padding(
               padding: const EdgeInsets.only(left: 20, right: 20),
               child: Column(
@@ -32,10 +40,13 @@ class AddPostScreen extends StatelessWidget {
                     height: SizeConfig.blockSizeVertical * 5,
                   ),
                   Center(
-                    child: headingText(
-                        controller.isEdit ? addPost.tr : editPost.tr,
+                    child: Obx(
+                          () => headingText(
+                        controller.isEdit.value ? editPost.tr : addPost.tr,
                         SizeConfig.blockSizeHorizontal * 8,
-                        colorBlack),
+                        colorBlack,
+                      ),
+                    ),
                   ),
                   SizedBox(
                     height: SizeConfig.blockSizeVertical * 5,
@@ -420,11 +431,7 @@ class AddPostScreen extends StatelessWidget {
                           height: SizeConfig.blockSizeVertical * 6,
                           child: Center(
                               child: Obx(() => headingText(
-                                  controller.postData.value.country != "" &&
-                                          controller.postData.value.country !=
-                                              null
-                                      ? update.tr
-                                      : add.tr,
+                                  controller.isEdit.value ? editPost.tr : addPost.tr,
                                   SizeConfig.blockSizeHorizontal * 4,
                                   colorWhite)))),
                     ),

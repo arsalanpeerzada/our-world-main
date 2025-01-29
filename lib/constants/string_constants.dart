@@ -111,6 +111,7 @@ const incorrectPassword = "Incorrect Password";
 const userDoesntExist = "User Doesn't Exist";
 const userExists = "User Exists";
 const joinUs = "Join Us";
+const followUs = "Follow Us";
 const signOut = "Sign Out";
 const joinUsText = "Join Us";
 const filter = "Filter";

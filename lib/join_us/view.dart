@@ -50,7 +50,7 @@ class JoinUsScreen extends StatelessWidget {
                   ),
                   Expanded(
                     child: Center(
-                        child: Text(joinUs.tr,
+                        child: Text(followUs.tr,
                             style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 18,
@@ -87,7 +87,7 @@ class JoinUsScreen extends StatelessWidget {
                           backgroundColor: Colors.blue, // Set the background color to blue
                           foregroundColor: Colors.white, // Set the text color to white
                         ),
-                        child: Text(joinUs.tr),
+                        child: Text(followUs.tr),
                       ),
                       SizedBox(
                         height: 5,

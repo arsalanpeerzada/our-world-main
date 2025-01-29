@@ -27,12 +27,12 @@ class PostController extends GetxController {
   var commentList = <Comments>[].obs;
   var selectedCountry = 0.obs;
   var selectedCategory = 0.obs;
-  var isEdit = false;
+  var isEdit = false.obs;
 
   @override
   void onInit() {
     // TODO: implement onInit
-    super.onInit();
+    // super.onInit();
     fetchUserPost();
     isLoading.value = true;
   }
@@ -118,11 +118,8 @@ class PostController extends GetxController {
       var requestBody = {
         'userId': userId,
         'categoryId': selectedCountry.value,
-        // Assuming this is an integer or string
         'countryId': selectedCategory.value,
-        // Assuming this is an integer or string
         'postText': textController.value.text.trim(),
-        'images': null,
         // Assuming this is a List of image URLs
       };
 
@@ -162,6 +159,7 @@ class PostController extends GetxController {
       } else {
         // Handle failed request (non-200 status code)
         print('Request failed with status: ${response.statusCode}');
+        String responseBody = await response.stream.bytesToString();
         print('Reason: ${response.reasonPhrase}');
         Get.snackbar('Error', 'Failed to create post. Please try again.',
             snackPosition: SnackPosition.BOTTOM);
@@ -235,7 +233,7 @@ class PostController extends GetxController {
         selectedCountry.value = postsData['countryId'];
         textController.value.text = postsData["postText"];
 
-        isEdit = true;
+        isEdit.value = true;
         isLoading.value = false;
 
         // If response is JSON, you can decode it
@@ -251,59 +249,71 @@ class PostController extends GetxController {
     }
   }
 
-   deletePostButtonClick() async {
-     isLoading.value = true;
-    String? authorizationToken = store.read('token');
-    int? postId = store.read('userId');
+  deletePostButtonClick() async {
+    if (selectedCountry.value == 0) {
+      Get.snackbar('Error', 'Delete Post is not Valid');
+    } else if (selectedCategory.value == 0) {
+      Get.snackbar('Error', 'Delete Post is not Valid');
+    } else if (textController.value.text.isEmpty &&
+        imageFileList.value.isEmpty) {
+      Get.snackbar('Error', 'Delete Post is not Valid');
+    } else {
+      isLoading.value = true;
+      String? authorizationToken = store.read('token');
+      int? postId = store.read('userId');
 
-    if (authorizationToken == null || authorizationToken.isEmpty) {
-      print('Authorization token is missing or empty.');
-      return;
-    }
+      if (authorizationToken == null || authorizationToken.isEmpty) {
+        print('Authorization token is missing or empty.');
+        return;
+      }
 
-    var headers = {
-      'Authorization': authorizationToken,
-    };
+      var headers = {
+        'Authorization': authorizationToken,
+      };
 
-    // Check if postId is null or invalid
-    if (postId == null) {
-      print('You dont have any post');
-      return;
-    }
+      // Check if postId is null or invalid
+      if (postId == null) {
+        print('You dont have any post');
+        return;
+      }
 
-    // Construct the URL for the request
-    final uri = Uri.parse(
-        '${BaseURL.BASEURL}${ApiEndPoints.DELETEPOST}?postId=$postId');
+      // Construct the URL for the request
+      final uri = Uri.parse(
+          '${BaseURL.BASEURL}${ApiEndPoints.DELETEPOST}?postId=$postId');
 
-    try {
-      // Create the DELETE request
-      var request = http.Request('DELETE', uri);
-      request.headers.addAll(headers);
+      try {
+        // Create the DELETE request
+        var request = http.Request('DELETE', uri);
+        request.headers.addAll(headers);
 
-      // Send the request
-      http.StreamedResponse response = await request.send();
+        // Send the request
+        http.StreamedResponse response = await request.send();
 
-      // Handle the response
-      if (response.statusCode == 200) {
-        // Handle successful response
-        String responseBody = await response.stream.bytesToString();
-        print('Response body: $responseBody');
-        Get.snackbar('Success', 'Post deleted successfully');
-        isLoading.value = false;
+        // Handle the response
+        if (response.statusCode == 200) {
+          // Handle successful response
+          String responseBody = await response.stream.bytesToString();
+          print('Response body: $responseBody');
+          Get.snackbar('Success', 'Post deleted successfully');
+          isLoading.value = false;
+          isEdit.value = false;
+          textController.value.clear();
+          imageFileList.clear();
+          selectedCountry.value = 0;
+          selectedCategory.value = 0;
 
-        textController.value.clear();
-        imageFileList.clear();
-        selectedCountry.value = 0;
-        selectedCategory.value = 0;
-      } else {
-        // Handle error response
-        print('Failed to delete post. Reason: ${response.reasonPhrase}');
+          Get.off(() => MainScreen());
+        } else {
+          // Handle error response
+          print('Failed to delete post. Reason: ${response.reasonPhrase}');
+
+          isLoading.value = false;
+        }
+      } catch (e) {
+        // Handle any exceptions during the request
+        print('Error occurred while making the request: $e');
         isLoading.value = false;
       }
-    } catch (e) {
-      // Handle any exceptions during the request
-      print('Error occurred while making the request: $e');
-      isLoading.value = false;
     }
   }
 
