@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:ourworldmain/constants/RemoteUtils.dart';
+import 'package:ourworldmain/login/ForgetPassword.dart';
 import 'package:ourworldmain/main_screen/ui/main_screen.dart';
 import 'package:ourworldmain/register/register_screen.dart';
 import '../common/size_config.dart';
@@ -169,7 +170,7 @@ class LoginScreen extends StatelessWidget {
                           onTap: () {
                             // Placeholder for register navigation
                             /*Get.snackbar("Info", "Navigate to Register Screen");*/
-                            Get.to(() => RegisterScreen());
+                            Get.to(() => Forgetpassword());
                           },
                           child: headingText(
                             "Forget Password",
