@@ -149,18 +149,36 @@ class LoginScreen extends StatelessWidget {
                       ),
                     ),
                     SizedBox(height: SizeConfig.blockSizeVertical * 7),
-                    InkWell(
-                      onTap: () {
-                        // Placeholder for register navigation
-                        /*Get.snackbar("Info", "Navigate to Register Screen");*/
-                        Get.to(() => RegisterScreen());
-                      },
-                      child: headingText(
-                        "Register Here",
-                        SizeConfig.blockSizeHorizontal * 3.5,
-                        colorBlack,
-                        weight: FontWeight.w600,
-                      ),
+                    Row(
+                      children: [
+                        InkWell(
+                          onTap: () {
+                            // Placeholder for register navigation
+                            /*Get.snackbar("Info", "Navigate to Register Screen");*/
+                            Get.to(() => RegisterScreen());
+                          },
+                          child: headingText(
+                            "Register Here",
+                            SizeConfig.blockSizeHorizontal * 3.5,
+                            colorBlack,
+                            weight: FontWeight.w600,
+                          ),
+                        ),
+                        Spacer(),
+                        InkWell(
+                          onTap: () {
+                            // Placeholder for register navigation
+                            /*Get.snackbar("Info", "Navigate to Register Screen");*/
+                            Get.to(() => RegisterScreen());
+                          },
+                          child: headingText(
+                            "Forget Password",
+                            SizeConfig.blockSizeHorizontal * 3.5,
+                            colorBlack,
+                            weight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
