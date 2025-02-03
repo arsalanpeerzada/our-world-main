@@ -1,8 +1,9 @@
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:http/http.dart' as http;
 import 'package:get_storage/get_storage.dart';
+import 'package:http/http.dart' as http;
 import 'package:ourworldmain/constants/RemoteUtils.dart';
 
 class Forgetpasswordcontroller extends GetxController {
@@ -14,16 +15,12 @@ class Forgetpasswordcontroller extends GetxController {
 
   Future<void> sendOtp() async {
     isLoading(true);
-    var url = Uri.parse("${BaseURL.BASEURL}/otp/send?phoneNumber=${phoneController.text}");
+    var url = Uri.parse(
+        "${BaseURL.BASEURL}${ApiEndPoints.SENDOTP}?phoneNumber=${phoneController.text}");
 
-    var headers = {
-      'Authorization': '••••••', // Replace with actual token
-    };
 
     try {
       var request = http.Request('POST', url);
-      request.headers.addAll(headers);
-
       http.StreamedResponse response = await request.send();
 
       if (response.statusCode == 200) {
@@ -44,29 +41,33 @@ class Forgetpasswordcontroller extends GetxController {
     }
   }
 
-
   Future<void> verifyOtp() async {
     isLoading(true);
-    var url = Uri.parse("https://yourapi.com/verifyOtp"); // Replace with actual API
+    var url = Uri.parse(
+        "${BaseURL.BASEURL}${ApiEndPoints.VERIFYOTP}?phoneNumber=${phoneController.text}&otp=${otpController.text}");
 
     try {
-      var response = await http.post(
-        url,
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({"phone": phoneController.text, "otp": otpController.text}),
-      );
+      var headers = {'Authorization': '••••••'};
+
+      var request = http.Request('POST', url);
+      request.headers.addAll(headers);
+
+      http.StreamedResponse response = await request.send();
 
       if (response.statusCode == 200) {
-        var jsonResponse = jsonDecode(response.body);
-        String token = jsonResponse['data']['token'];
+        var responseBody = await response.stream.bytesToString();
+        var jsonResponse = jsonDecode(responseBody);
 
+        String token = jsonResponse['data']['token'];
         final storage = GetStorage();
         storage.write('token', token);
 
-        Get.snackbar("Success", "OTP Verified", snackPosition: SnackPosition.BOTTOM);
+        Get.snackbar("Success", "OTP Verified",
+            snackPosition: SnackPosition.BOTTOM);
         Get.offAllNamed('/home'); // Navigate to home screen
       } else {
-        Get.snackbar("Error", "Invalid OTP", snackPosition: SnackPosition.BOTTOM);
+        Get.snackbar("Error", response.reasonPhrase ?? "Invalid OTP",
+            snackPosition: SnackPosition.BOTTOM);
       }
     } catch (e) {
       Get.snackbar("Error", "An error occurred: $e",

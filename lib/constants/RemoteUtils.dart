@@ -8,9 +8,11 @@ class ApiEndPoints {
   static const GETPOSTBYID = "post/getPostById";
   static const GETPOSTBYFILTER = "post/getAllPostByCategory";
   static const DELETEPOST = "post/deletePost";
+  static const SENDOTP = "otp/send";
+  static const VERIFYOTP = "otp/verify";
 
 }
 
 class BaseURL {
-  static const BASEURL = "http://44.219.174.122:8080/api/";
+  static const BASEURL = "http://50.17.75.6:8080/api/";
 }
