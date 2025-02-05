@@ -19,47 +19,47 @@ class RegisterController extends GetxController {
     super.onInit();
   }
 
+// Register method
   Future<void> register() async {
-    if (nameController.value.text.isEmpty) {
-      showMessage("Please enter your name");
-    } else if (phoneController.value.text.isEmpty) {
-      showMessage("Please enter your phone number");
-    } else if (passwordController.value.text.isEmpty) {
-      showMessage("Please enter your password");
-    } else {
-      isLoading.value = true;
+    String name = nameController.value.text;
+    String phone = phoneController.value.text;
+    String password = passwordController.value.text;
 
-      try {
-        var headers = {'Content-Type': 'application/json'};
-        var body = json.encode({
-          "userName": nameController.value.text,
-          "password": passwordController.value.text,
-          "firstName": nameController.value.text,
-          "lastName": nameController.value.text,
-          "email": nameController.value.text+"@gmail.com",
-          "phone": phoneController.value.text,
-        });
+    // Perform validations
+    if (!isValidName(name) || !isValidPhone(phone) || !isValidPassword(password)) {
+      return;
+    }
 
-        var response = await http.post(
-          Uri.parse(BaseURL.BASEURL+ApiEndPoints.SIGNUP),
-          headers: headers,
-          body: body,
-        );
+    // If all validations pass
+    isLoading.value = true;
 
-        if (response.statusCode == 200) {
-          /*var responseData = json.decode(response.body);
-          print(responseData);*/
-          showMessage("Registration successful");
-        } else {
-          //print("Error: ${response.reasonPhrase}");
-          showMessage("Registration failed: UserName already exist");
-        }
-      } catch (e) {
-        print("Exception: $e");
-        showMessage("An error occurred. Please try again.");
-      } finally {
-        isLoading.value = false;
+    try {
+      var headers = {'Content-Type': 'application/json'};
+      var body = json.encode({
+        "userName": name,
+        "password": password,
+        "firstName": name,
+        "lastName": name,
+        "email": "$name@gmail.com",
+        "phone": phone,
+      });
+
+      var response = await http.post(
+        Uri.parse(BaseURL.BASEURL + ApiEndPoints.SIGNUP),
+        headers: headers,
+        body: body,
+      );
+
+      if (response.statusCode == 200) {
+        showMessage("Registration successful");
+      } else {
+        showMessage("Registration failed: Username already exists");
       }
+    } catch (e) {
+      print("Exception: $e");
+      showMessage("An error occurred. Please try again.");
+    } finally {
+      isLoading.value = false;
     }
   }
 
@@ -69,6 +69,45 @@ class RegisterController extends GetxController {
       message,
       snackPosition: SnackPosition.BOTTOM,
     );
+  }
+
+  bool isValidName(String name) {
+    if (name.isEmpty) {
+      showMessage("Please enter your name");
+      return false;
+    } else if (name.length < 6) {
+      showMessage("Name must be at least 6 characters long");
+      return false;
+    } else if (!RegExp(r'^[a-zA-Z0-9 ]+$').hasMatch(name)) {
+      showMessage("Name must not contain special characters");
+      return false;
+    }
+    return true;
+  }
+
+  bool isValidPhone(String phone) {
+    if (phone.isEmpty) {
+      showMessage("Please enter your phone number");
+      return false;
+    } else if (phone.length < 9 || phone.length > 15) {
+      showMessage("Phone number must be between 9 and 15 digits");
+      return false;
+    } else if (!RegExp(r'^[0-9]+$').hasMatch(phone)) {
+      showMessage("Phone number must contain only digits");
+      return false;
+    }
+    return true;
+  }
+
+  bool isValidPassword(String password) {
+    if (password.isEmpty) {
+      showMessage("Please enter your password");
+      return false;
+    } else if (password.length < 6 || password.length > 15) {
+      showMessage("Password must be between 6 and 15 characters");
+      return false;
+    }
+    return true;
   }
 }
 

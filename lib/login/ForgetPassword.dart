@@ -13,71 +13,78 @@ class Forgetpassword extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: colorWhite,
-      appBar: AppBar(title: Text("OTP Login")),
-      body: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            headingText("Enter Phone Number",
-                SizeConfig.blockSizeHorizontal * 4, colorBlack),
-            SizedBox(height: SizeConfig.blockSizeVertical * 2),
-
-            buildTextField(
-                controller.phoneController, "Enter your phone number"),
-            SizedBox(height: SizeConfig.blockSizeVertical * 4),
-
-            Obx(() =>
-            controller.isOtpSent.value
-                ? Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                headingText("Enter OTP",
-                    SizeConfig.blockSizeHorizontal * 4, colorBlack),
-                SizedBox(height: SizeConfig.blockSizeVertical * 2),
-
-                buildTextField(
-                    controller.otpController, "Enter OTP", obscureText: true),
-                SizedBox(height: SizeConfig.blockSizeVertical * 4),
-
-                Center(
-                  child: ElevatedButton(
-                    onPressed: controller.verifyOtp,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: colorRed,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: colorWhite,
+        appBar: AppBar(title: Text("OTP Login")),
+        body: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              headingText("Enter Phone Number",
+                  SizeConfig.blockSizeHorizontal * 4, colorBlack),
+      
+              buildTextField(
+                  controller.phoneController, "Enter your phone number (966 XXXXXXXXX)"),
+              SizedBox(height: SizeConfig.blockSizeVertical * 2),
+      
+              Obx(() =>
+              controller.isOtpSent.value
+                  ? Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  headingText("Enter OTP",
+                      SizeConfig.blockSizeHorizontal * 4, colorBlack),
+      
+                  buildTextField(
+                      controller.otpController, "Enter OTP"),
+                  SizedBox(height: SizeConfig.blockSizeVertical * 2),
+      
+                  headingText("Enter New Password",
+                      SizeConfig.blockSizeHorizontal * 4, colorBlack),
+      
+                  buildTextField(
+                      controller.passwordController, "Enter New Password", obscureText: true),
+                  SizedBox(height: SizeConfig.blockSizeVertical * 2),
+      
+                  Center(
+                    child: ElevatedButton(
+                      onPressed: controller.verifyOtp,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: colorRed,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        elevation: 10.0,
                       ),
-                      elevation: 10.0,
+                      child: Obx(() =>
+                      controller.isLoading.value
+                          ? CircularProgressIndicator(color: colorWhite)
+                          : Text("Verify OTP",
+                          style: TextStyle(color: colorWhite))),
                     ),
-                    child: Obx(() =>
-                    controller.isLoading.value
-                        ? CircularProgressIndicator(color: colorWhite)
-                        : Text("Verify OTP",
-                        style: TextStyle(color: colorWhite))),
                   ),
-                ),
-              ],
-            )
-                : Center(
-              child: ElevatedButton(
-                onPressed: controller.sendOtp,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: colorRed,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+                ],
+              )
+                  : Center(
+                child: ElevatedButton(
+                  onPressed: controller.sendOtp,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: colorRed,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    elevation: 10.0,
                   ),
-                  elevation: 10.0,
+                  child: Obx(() =>
+                  controller.isLoading.value
+                      ? CircularProgressIndicator(color: colorWhite)
+                      : Text("Send OTP", style: TextStyle(color: colorWhite))),
                 ),
-                child: Obx(() =>
-                controller.isLoading.value
-                    ? CircularProgressIndicator(color: colorWhite)
-                    : Text("Send OTP", style: TextStyle(color: colorWhite))),
-              ),
-            )),
-          ],
+              )),
+            ],
+          ),
         ),
       ),
     );

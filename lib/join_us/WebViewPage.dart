@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:webview_flutter/webview_flutter.dart';
-
+import 'package:url_launcher/url_launcher.dart';
 
 class WebViewPage extends StatefulWidget {
   @override
@@ -8,10 +7,31 @@ class WebViewPage extends StatefulWidget {
 }
 
 class _WebViewPageState extends State<WebViewPage> {
-  final controller = WebViewController()
-    ..setJavaScriptMode(JavaScriptMode.disabled)
-    ..loadRequest(
-        Uri.parse('https://t.me/ourworldtrip'));
+  final String telegramUrl = 'http://t.me/ourworldtrip';
+
+  @override
+  void initState() {
+    super.initState();
+    _launchTelegram();
+  }
+
+  Future<void> _launchTelegram() async {
+    final Uri url = Uri.parse(telegramUrl);
+
+    // Check if the Telegram app can handle the URL
+    if (await canLaunchUrl(url)) {
+      await launchUrl(
+        url,
+        mode: LaunchMode.externalApplication, // Opens the Telegram app or browser
+      );
+      Navigator.pop(context); // Automatically navigate back after launching
+    } else {
+      // If Telegram app is not installed, show a message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Could not open Telegram. Please ensure it is installed.')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,14 +41,17 @@ class _WebViewPageState extends State<WebViewPage> {
         foregroundColor: Colors.white,
         backgroundColor: Colors.blue,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.white), // Set your desired icon and color
+          icon: Icon(Icons.arrow_back, color: Colors.white), // Back icon
           onPressed: () {
-            Navigator.pop(context); // Navigates back to the previous screen
+            Navigator.pop(context); // Navigate back to the previous screen
           },
         ),
       ),
-      body: WebViewWidget(
-        controller: controller,
+      body: Center(
+        child: Text(
+          'Launching Telegram...',
+          style: TextStyle(fontSize: 16),
+        ),
       ),
     );
   }
